@@ -9,11 +9,14 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Text.Json;
+using ComboBox = System.Windows.Controls.ComboBox;
 
 namespace SF_PlayerCommonMergeTool
 {
@@ -28,9 +31,13 @@ namespace SF_PlayerCommonMergeTool
 
         public string workspace = "temp\\";
 
+        string appdata = string.Empty;
+
+        public StoredData storedData = new StoredData();
+
         public string iniTemplate =
 "[Desc]\n" +
-"Title=\"Merged playercommon\"\n" +
+"Title=\"MergedPlayerCommon\"\n" +
 "Description=\"\"\n" +
 "Version=1.0\n" +
 "Date=\"2022-11-18\"\n" +
@@ -51,44 +58,113 @@ namespace SF_PlayerCommonMergeTool
         public MainWindow()
         {
             InitializeComponent();
+
+            appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\SonicFrontiersModding\\SF_PlayerCommonMerge\\";
+            if (File.Exists(appdata + "\\storedData.json"))
+            {
+                LoadStoredData();
+                GameFolderTextbox.Text = storedData.installLocation;
+                Load();
+            }
+        }
+
+        public void LoadStoredData()
+        {
+            string json = File.ReadAllText(appdata + "storedData.json");
+            storedData = (StoredData)JsonSerializer.Deserialize(json, typeof(StoredData));
+        }
+
+        public void SaveStoredData()
+        {
+            string json = JsonSerializer.Serialize(storedData);
+            File.WriteAllText(appdata + "storedData.json", json);
         }
 
         private void LoadButton_Click(object sender, RoutedEventArgs e)
         {
-            CategoryStackPanel.Children.Clear();
-            categories.Clear();
-            mods.Clear();
+            Load();
+        }
 
-            categories.Add(new Category("Set All", "set_all", CategoryStackPanel, out SetAllComboBox));
-            SetAllComboBox.SelectionChanged += SetAllComboBox_SelectionChanged;
-
-            TextBlock space = new TextBlock();
-            space.Height = 10;
-            CategoryStackPanel.Children.Add(space);
-
-            categories.Add(new Category("Open Zone Physics", "openzone", 0x72E0, 0xB20, CategoryStackPanel));
-            categories.Add(new Category("Cyberspace 3D Physics", "cyber3d", 0x7F80, 0xB20, CategoryStackPanel));
-            categories.Add(new Category("Cyberspace 2D Physics", "cyber2d", 0x8AA0, 0xB20, CategoryStackPanel));
-            categories.Add(new Category("Gameplay", "gameplay", 0x40, 0x72A0, CategoryStackPanel));
-            categories.Add(new Category("Cyloop", "cyloop", 0x5250, 0x1440, CategoryStackPanel));
-
-            //AddToComboBox("Unmodded");
-            //SetComboBoxIndex(0);
-
-            string[] folders = Directory.GetDirectories(GameFolderTextbox.Text + "\\Mods\\");
-
-            foreach (var folder in folders)
+        private void Load()
+        {
+            if (storedData.installLocation != string.Empty)
             {
-                string pacFile = folder + "/raw/character/playercommon.pac";
-                if (File.Exists(pacFile))
+                CategoryStackPanel.Children.Clear();
+                categories.Clear();
+                mods.Clear();
+
+                categories.Add(new Category("Set All", "set_all", CategoryStackPanel, out SetAllComboBox));
+                SetAllComboBox.SelectionChanged += SetAllComboBox_SelectionChanged;
+
+                TextBlock space = new TextBlock();
+                space.Height = 10;
+                CategoryStackPanel.Children.Add(space);
+
+                categories.Add(new Category("Open Zone Physics", "openzone", 0x72E0, 0xB20, CategoryStackPanel));
+                categories.Add(new Category("Cyberspace 3D Physics", "cyber3d", 0x7F80, 0xB20, CategoryStackPanel));
+                categories.Add(new Category("Cyberspace 2D Physics", "cyber2d", 0x8AA0, 0xB20, CategoryStackPanel));
+                categories.Add(new Category("Gameplay", "gameplay", 0x40, 0x72A0, CategoryStackPanel));
+                categories.Add(new Category("Cyloop", "cyloop", 0x5250, 0x1440, CategoryStackPanel));
+
+                string[] folders = Directory.GetDirectories(GameFolderTextbox.Text + "\\Mods\\");
+
+                foreach (var folder in folders)
                 {
-                    mods.Add(new Mod(folder));
+                    string pacFile = folder + "/raw/character/playercommon.pac";
+                    if (File.Exists(pacFile))
+                    {
+                        Mod mod = new Mod(folder);
+                        if (mod.title != "MergedPlayerCommon")
+                        {
+                            mods.Add(mod);
+                        }
+                    }
                 }
-            }
 
-            foreach (var mod in mods)
-            {
-                AddToComboBox(mod);
+                foreach (var mod in mods)
+                {
+                    AddToComboBox(mod);
+                }
+
+                string modFolder = GameFolderTextbox.Text + "\\Mods\\MergedPlayerCommon";
+
+                if (Directory.Exists(modFolder))
+                {
+                    if (storedData.categorySelection.Count > 0)
+                    {
+                        foreach (var selection in storedData.categorySelection)
+                        {
+                            bool success = false;
+                            foreach (var category in categories)
+                            {
+                                if (category.HasOffset)
+                                {
+                                    if (selection.id == category.id)
+                                    {
+                                        for (int i = 1; i < category.comboBox.Items.Count; i++)
+                                        {
+                                            var item = category.comboBox.Items[i];
+                                            if ((item as Mod).title == selection.modTitle)
+                                            {
+                                                category.comboBox.SelectedItem = item;
+                                                success = true;
+                                            }
+                                            if (success)
+                                                break;
+                                        }
+                                    }
+                                    if (success)
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    storedData.categorySelection.Clear();
+                    SaveStoredData();
+                }
             }
         }
 
@@ -104,8 +180,6 @@ namespace SF_PlayerCommonMergeTool
 
         private void AddToComboBox(object value)
         {
-            //SetAllComboBox.Items.Add(value);
-
             foreach (var cateogry in categories)
             {
                 cateogry.comboBox.Items.Add(value);
@@ -122,175 +196,138 @@ namespace SF_PlayerCommonMergeTool
 
         private void MergeButton_Click(object sender, RoutedEventArgs e)
         {
-            string modFolder = GameFolderTextbox.Text + "Mods\\Merged playercommon";
-            string newPacFolder = modFolder + "\\raw\\character\\";
-
-            // Create a folder for the new merged mod in the Mods folder
-            if (!Directory.Exists(newPacFolder))
+            if (storedData.installLocation != String.Empty)
             {
-                Directory.CreateDirectory(newPacFolder);
-            }
+                string modFolder = GameFolderTextbox.Text + "\\Mods\\MergedPlayerCommon";
+                string newPacFolder = modFolder + "\\raw\\character\\";
 
-            if (!Directory.Exists(workspace))
-            {
-                Directory.CreateDirectory(workspace);
-            }
-
-            File.Copy(GameFolderTextbox.Text + "image\\x64\\raw\\character\\playercommon.pac", workspace + "playercommon_vanilla.pac", true);
-
-            string strCmdText;
-            strCmdText = $"\"{workspace}playercommon_vanilla.pac\" {workspace}\\out_vanilla -E -T=rangers";
-            System.Diagnostics.Process.Start("HedgeArcPackFrontiers.exe", strCmdText);
-
-            foreach (var category in categories)
-            {
-                if (category.HasOffset && category.comboBox.SelectedIndex > 0)
+                if (!Directory.Exists(newPacFolder))
                 {
-                    Mod mod = mods[category.comboBox.SelectedIndex - 1];
-                    string copyOfPac = workspace + "playercommon_" + category.id + ".pac";
-                    File.Copy(mod.path + "\\raw\\character\\playercommon.pac", copyOfPac, true);
-
-                    strCmdText = string.Empty;
-                    strCmdText = $"\"{copyOfPac}\" {workspace}\\out_{category.id} -E -T=rangers";
-                    System.Diagnostics.Process.Start("HedgeArcPackFrontiers.exe", strCmdText);
-
+                    Directory.CreateDirectory(newPacFolder);
                 }
-            }
 
-            Thread.Sleep(200);
-
-            string rfl = $"{workspace}\\out_vanilla\\player_common.rfl";
-            byte[] file = File.ReadAllBytes(rfl);
-
-            foreach (var category in categories)
-            {
-                if (category.HasOffset && category.comboBox.SelectedIndex > 0)
+                if (!Directory.Exists(workspace))
                 {
-                    byte[] categoryFile = File.ReadAllBytes($"{workspace}\\out_{category.id}\\player_common.rfl");
-                    category.data = categoryFile.ToList().GetRange(category.offset, category.size).ToArray();
+                    Directory.CreateDirectory(workspace);
+                }
 
-                    for (int i = 0; i < category.size; i++)
+                File.Copy(GameFolderTextbox.Text + "\\image\\x64\\raw\\character\\playercommon.pac", workspace + "playercommon_vanilla.pac", true);
+
+                string strCmdText;
+                strCmdText = $"\"{workspace}playercommon_vanilla.pac\" {workspace}\\out_vanilla -E -T=rangers";
+                System.Diagnostics.Process.Start("HedgeArcPackFrontiers.exe", strCmdText);
+
+                foreach (var category in categories)
+                {
+                    if (category.HasOffset && category.comboBox.SelectedIndex > 0)
                     {
-                        file[i + category.offset] = category.data[i];
+                        Mod mod = mods[category.comboBox.SelectedIndex - 1];
+                        string copyOfPac = workspace + "playercommon_" + category.id + ".pac";
+                        File.Copy(mod.path + "\\raw\\character\\playercommon.pac", copyOfPac, true);
+
+                        strCmdText = string.Empty;
+                        strCmdText = $"\"{copyOfPac}\" {workspace}\\out_{category.id} -E -T=rangers";
+                        System.Diagnostics.Process.Start("HedgeArcPackFrontiers.exe", strCmdText);
+
                     }
                 }
+
+                Thread.Sleep(200);
+
+                string rfl = $"{workspace}\\out_vanilla\\player_common.rfl";
+                byte[] file = File.ReadAllBytes(rfl);
+
+                foreach (var category in categories)
+                {
+                    if (category.HasOffset && category.comboBox.SelectedIndex > 0)
+                    {
+                        byte[] categoryFile = File.ReadAllBytes($"{workspace}\\out_{category.id}\\player_common.rfl");
+                        category.data = categoryFile.ToList().GetRange(category.offset, category.size).ToArray();
+
+                        for (int i = 0; i < category.size; i++)
+                        {
+                            file[i + category.offset] = category.data[i];
+                        }
+                    }
+                }
+
+                File.WriteAllBytes(rfl, file);
+
+                strCmdText = $"\"{workspace}out_vanilla\" {workspace}\\out_vanilla.pac -P -T=rangers";
+                System.Diagnostics.Process.Start("HedgeArcPackFrontiers.exe", strCmdText);
+
+                Thread.Sleep(200);
+
+                File.Move($"{workspace}\\out_vanilla.pac", newPacFolder + "playercommon.pac", true);
+                File.WriteAllText(modFolder + "\\mod.ini", iniTemplate);
+
+                ClearDirectory(new DirectoryInfo(workspace));
+                Directory.Delete(workspace);
+
+
+                storedData.categorySelection.Clear();
+                
+                foreach (var category in categories)
+                {
+                    Mod mod = (category.comboBox.SelectedItem as Mod);
+
+                    if (mod != null)
+                    {
+                        storedData.categorySelection.Add(new StoredData.CategorySelection(category.id, (category.comboBox.SelectedItem as Mod).title));
+                    }
+                }
+                SaveStoredData();
             }
-
-            File.WriteAllBytes(rfl, file);
-
-            strCmdText = $"\"{workspace}out_vanilla\" {workspace}\\out_vanilla.pac -P -T=rangers";
-            System.Diagnostics.Process.Start("HedgeArcPackFrontiers.exe", strCmdText);
-
-            Thread.Sleep(200);
-
-            File.Move($"{workspace}\\out_vanilla.pac", newPacFolder + "playercommon.pac", true);
-            File.WriteAllText(modFolder + "\\mod.ini", iniTemplate);
-
-            ClearDirectory(new DirectoryInfo(workspace));
-            Directory.Delete(workspace);
-
-            // Create a copy of the vanilla file and put it in the merged mod folder
-            // foreach category
-            // extract the required mod
-            // take binary from the offsets and paste it into the vanilla copy
-            // Repack the copy of the vanilla file
-
-
         }
 
-        public void ClearDirectory(System.IO.DirectoryInfo directory)
+        public void ClearDirectory(DirectoryInfo directory)
         {
-            foreach (System.IO.FileInfo file in directory.GetFiles()) file.Delete();
-            foreach (System.IO.DirectoryInfo subDirectory in directory.GetDirectories()) subDirectory.Delete(true);
-        }
-    }
-
-    public class Category
-    {
-        public string name;
-        public string id;
-        public int offset;
-        public int size;
-        public ComboBox comboBox;
-        public byte[] data;
-
-        public bool HasOffset { get; private set; }
-
-        public Category(string name, string id, StackPanel parent, out ComboBox comboBox)
-        {
-            this.name = name;
-            comboBox = InitComboBox(parent);
-            this.comboBox = comboBox;
+            foreach (FileInfo file in directory.GetFiles()) file.Delete();
+            foreach (DirectoryInfo subDirectory in directory.GetDirectories()) subDirectory.Delete(true);
         }
 
-        public Category(string name, string id, int offset, int size, StackPanel parent)
+        private void BrowseButton_Click(object sender, RoutedEventArgs e)
         {
-            this.name = name;
-            this.offset = offset;
-            this.size = size;
-            this.id = id;
-            HasOffset = true;
+            //FolderBrowserEx.FolderBrowserDialog browserDialog = new FolderBrowserEx.FolderBrowserDialog();
+            FileDialog browserDialog = new OpenFileDialog();
+            browserDialog.Filter = "EXE files (*.exe)|*.exe";
 
-            comboBox = InitComboBox(parent);
-        }
+            while (true)
+            {
+                DialogResult result = browserDialog.ShowDialog();
 
-        public ComboBox InitComboBox(StackPanel parent)
-        {
+                if (result == System.Windows.Forms.DialogResult.OK)
+                {
+                    string folder = System.IO.Path.GetDirectoryName(browserDialog.FileName);
+                    if (folder != string.Empty && Directory.Exists(folder) && File.Exists(folder + "\\image\\x64\\raw\\character\\sonic.pac"))
+                    {
+                        storedData.installLocation = folder;
 
-            StackPanel panel = new StackPanel();
-            panel.Orientation = Orientation.Horizontal;
-            panel.Margin = new Thickness(0, 0, 0, 5);
+                        GameFolderTextbox.Text = folder;
+                        if (!Directory.Exists(appdata))
+                        {
+                            Directory.CreateDirectory(appdata);
+                        }
 
-            TextBlock label = new TextBlock();
-            label.Text = name;
-            label.Width = 160;
-            label.Height = 22;
-            label.Margin = new Thickness(0, 0, 5, 0);
-            label.TextAlignment = TextAlignment.Right;
-
-            comboBox = new ComboBox();
-            comboBox.Width = 240;
-            comboBox.Height = 22;
-            comboBox.Items.Add("Unmodded");
-            comboBox.SelectedIndex = 0;
-
-            panel.Children.Add(label);
-            panel.Children.Add(comboBox);
-
-            parent.Children.Add(panel);
-
-            return comboBox;
-        }
-
-        public override string ToString()
-        {
-            return name;
-        }
-    }
-
-    public class Mod
-    {
-        public enum ActiveSection { None, Physics, Color }
-
-        public string title;
-        public string path;
-        public ActiveSection activeSection = ActiveSection.None;
-
-        public Mod(string path)
-        {
-            IniFile modIni = new IniFile(path + "/mod.ini");
-
-            modIni.KeyExists("Title", "Desc");
-            string title = modIni.Read("Title", "Desc");
-
-            this.title = title;
-            this.path = path;
-            this.activeSection = ActiveSection.None;
-        }
-
-        public override string ToString()
-        {
-            return title;
+                        //File.WriteAllText(appdata + "installLocation.txt", folder);
+                        SaveStoredData();
+                        Load();
+                        break;
+                    }
+                    else
+                    {
+                        DialogResult messageResult = System.Windows.Forms.MessageBox.Show("Please select Sonic Frontiers.exe", "Error", MessageBoxButtons.OKCancel);
+                        if (messageResult == System.Windows.Forms.DialogResult.Cancel)
+                        {
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            }
         }
     }
 }

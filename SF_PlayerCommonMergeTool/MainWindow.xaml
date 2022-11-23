@@ -5,12 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SF_PlayerCommonMergeTool"
         mc:Ignorable="d"
-        Title="PlayerCommon RFL Merge Tool" Height="406" Width="462">
+        Title="PlayerCommon RFL Merge Tool" Height="322" Width="462" ResizeMode="NoResize">
     <Grid>
-        <TextBox x:Name="GameFolderTextbox" Margin="10,10,139,0" TextWrapping="Wrap" Text="C:\Games\Steam\steamapps\common\SonicFrontiers\" VerticalAlignment="Top"/>
-        <Button x:Name="MergeButton" Content="Merge" HorizontalAlignment="Left" Margin="10,288,0,0" VerticalAlignment="Top" Width="390" Click="MergeButton_Click"/>
-        <StackPanel x:Name="CategoryStackPanel" Margin="10,33,0,151" HorizontalAlignment="Left" Width="415"/>
-        <Button x:Name="LoadButton" Content="Load" Margin="0,9,10,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="124" Click="LoadButton_Click"/>
+        <TextBox x:Name="GameFolderTextbox" Margin="10,10,92,0" TextWrapping="NoWrap" Text="" VerticalAlignment="Top"/>
+        <Button x:Name="MergeButton" Content="Merge" Margin="10,0,10,10" Click="MergeButton_Click" Height="20" VerticalAlignment="Bottom"/>
+        <StackPanel x:Name="CategoryStackPanel" Margin="10,51,10,35"/>
+        <Button x:Name="BrowseButton" Content="Browse" Margin="0,9,10,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="77" Click="BrowseButton_Click"/>
 
     </Grid>
 </Window>
