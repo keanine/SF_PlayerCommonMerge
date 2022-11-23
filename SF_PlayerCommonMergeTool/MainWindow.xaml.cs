@@ -9,7 +9,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -17,6 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Text.Json;
 using ComboBox = System.Windows.Controls.ComboBox;
+using Microsoft.Win32;
 
 namespace SF_PlayerCommonMergeTool
 {
@@ -288,15 +288,12 @@ namespace SF_PlayerCommonMergeTool
 
         private void BrowseButton_Click(object sender, RoutedEventArgs e)
         {
-            //FolderBrowserEx.FolderBrowserDialog browserDialog = new FolderBrowserEx.FolderBrowserDialog();
-            FileDialog browserDialog = new OpenFileDialog();
+            OpenFileDialog browserDialog = new OpenFileDialog();
             browserDialog.Filter = "EXE files (*.exe)|*.exe";
 
             while (true)
             {
-                DialogResult result = browserDialog.ShowDialog();
-
-                if (result == System.Windows.Forms.DialogResult.OK)
+                if (browserDialog.ShowDialog() == true)
                 {
                     string folder = System.IO.Path.GetDirectoryName(browserDialog.FileName);
                     if (folder != string.Empty && Directory.Exists(folder) && File.Exists(folder + "\\image\\x64\\raw\\character\\sonic.pac"))
@@ -309,15 +306,14 @@ namespace SF_PlayerCommonMergeTool
                             Directory.CreateDirectory(appdata);
                         }
 
-                        //File.WriteAllText(appdata + "installLocation.txt", folder);
                         SaveStoredData();
                         Load();
                         break;
                     }
                     else
                     {
-                        DialogResult messageResult = System.Windows.Forms.MessageBox.Show("Please select Sonic Frontiers.exe", "Error", MessageBoxButtons.OKCancel);
-                        if (messageResult == System.Windows.Forms.DialogResult.Cancel)
+                        MessageBoxResult messageResult = MessageBox.Show("Please select Sonic Frontiers.exe", "Error", MessageBoxButton.OKCancel);
+                        if (messageResult == MessageBoxResult.Cancel)
                         {
                             break;
                         }

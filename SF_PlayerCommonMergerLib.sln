@@ -7,9 +7,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SF_PlayerCommonMergerLib", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SF_PlayerCommonMergerLibCS", "SF_PlayerCommonMergerLibCS\SF_PlayerCommonMergerLibCS.csproj", "{DA2C28C6-A5C3-45ED-A1B4-90D791321111}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestDLL", "TestDLL\TestDLL.csproj", "{1CF3FE68-9BDC-4DF8-85A4-E2191F3CB9DD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestDLL", "TestDLL\TestDLL.csproj", "{1CF3FE68-9BDC-4DF8-85A4-E2191F3CB9DD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SF_PlayerCommonMergeTool", "SF_PlayerCommonMergeTool\SF_PlayerCommonMergeTool.csproj", "{D70EAA02-1C4D-4E05-84EF-A64144879614}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF_PlayerCommonMergeTool", "SF_PlayerCommonMergeTool\SF_PlayerCommonMergeTool.csproj", "{D70EAA02-1C4D-4E05-84EF-A64144879614}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
