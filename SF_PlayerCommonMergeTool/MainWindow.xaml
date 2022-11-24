@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="PlayerCommon RFL Merge Tool" Height="322" Width="462" ResizeMode="NoResize">
     <Grid>
-        <TextBox x:Name="GameFolderTextbox" Margin="10,10,92,0" TextWrapping="NoWrap" Text="" VerticalAlignment="Top"/>
+        <TextBox x:Name="GameFolderTextbox" Margin="10,10,92,0" TextWrapping="NoWrap" Text="" VerticalAlignment="Top" IsReadOnly="True"/>
         <Button x:Name="MergeButton" Content="Merge" Margin="10,0,10,10" Click="MergeButton_Click" Height="20" VerticalAlignment="Bottom"/>
         <StackPanel x:Name="CategoryStackPanel" Margin="10,51,10,35"/>
         <Button x:Name="BrowseButton" Content="Browse" Margin="0,9,10,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="77" Click="BrowseButton_Click"/>

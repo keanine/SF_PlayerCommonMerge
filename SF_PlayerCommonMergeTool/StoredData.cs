@@ -14,6 +14,7 @@ namespace SF_PlayerCommonMergeTool
 
         public StoredData()
         {
+            installLocation = string.Empty;
             categorySelection = new List<CategorySelection>();
         }
 

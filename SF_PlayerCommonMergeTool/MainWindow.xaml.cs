@@ -106,7 +106,7 @@ namespace SF_PlayerCommonMergeTool
                 categories.Add(new Category("Gameplay", "gameplay", 0x40, 0x72A0, CategoryStackPanel));
                 categories.Add(new Category("Cyloop", "cyloop", 0x5250, 0x1440, CategoryStackPanel));
 
-                string[] folders = Directory.GetDirectories(GameFolderTextbox.Text + "\\Mods\\");
+                string[] folders = Directory.GetDirectories(storedData.installLocation + "\\Mods\\");
 
                 foreach (var folder in folders)
                 {
@@ -126,7 +126,7 @@ namespace SF_PlayerCommonMergeTool
                     AddToComboBox(mod);
                 }
 
-                string modFolder = GameFolderTextbox.Text + "\\Mods\\MergedPlayerCommon";
+                string modFolder = storedData.installLocation + "\\Mods\\MergedPlayerCommon";
 
                 if (Directory.Exists(modFolder))
                 {
@@ -196,9 +196,9 @@ namespace SF_PlayerCommonMergeTool
 
         private void MergeButton_Click(object sender, RoutedEventArgs e)
         {
-            if (storedData.installLocation != String.Empty)
+            if (storedData.installLocation != string.Empty)
             {
-                string modFolder = GameFolderTextbox.Text + "\\Mods\\MergedPlayerCommon";
+                string modFolder = storedData.installLocation + "\\Mods\\MergedPlayerCommon";
                 string newPacFolder = modFolder + "\\raw\\character\\";
 
                 if (!Directory.Exists(newPacFolder))
@@ -211,7 +211,7 @@ namespace SF_PlayerCommonMergeTool
                     Directory.CreateDirectory(workspace);
                 }
 
-                File.Copy(GameFolderTextbox.Text + "\\image\\x64\\raw\\character\\playercommon.pac", workspace + "playercommon_vanilla.pac", true);
+                File.Copy(storedData.installLocation + "\\image\\x64\\raw\\character\\playercommon.pac", workspace + "playercommon_vanilla.pac", true);
 
                 string strCmdText;
                 strCmdText = $"\"{workspace}playercommon_vanilla.pac\" {workspace}\\out_vanilla -E -T=rangers";
@@ -299,8 +299,9 @@ namespace SF_PlayerCommonMergeTool
                     if (folder != string.Empty && Directory.Exists(folder) && File.Exists(folder + "\\image\\x64\\raw\\character\\sonic.pac"))
                     {
                         storedData.installLocation = folder;
-
                         GameFolderTextbox.Text = folder;
+                        MergeButton.IsEnabled = true;
+
                         if (!Directory.Exists(appdata))
                         {
                             Directory.CreateDirectory(appdata);
@@ -315,12 +316,16 @@ namespace SF_PlayerCommonMergeTool
                         MessageBoxResult messageResult = MessageBox.Show("Please select Sonic Frontiers.exe", "Error", MessageBoxButton.OKCancel);
                         if (messageResult == MessageBoxResult.Cancel)
                         {
+                            GameFolderTextbox.Text = string.Empty;
+                            MergeButton.IsEnabled = false;
                             break;
                         }
                     }
                 }
                 else
                 {
+                    GameFolderTextbox.Text = string.Empty;
+                    MergeButton.IsEnabled = false;
                     break;
                 }
             }
