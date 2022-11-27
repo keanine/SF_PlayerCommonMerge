@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,10 +17,27 @@ namespace SF_PlayerCommonMergeTool
 
         public Mod(string path)
         {
-            IniFile modIni = new IniFile(path + "/mod.ini");
+            bool isConfigMod = false;
+
+            IniFile modIni;
+
+            if (File.Exists(path + "/mod.ini"))
+            {
+                modIni = new IniFile(path + "/mod.ini");
+            }
+            else
+            {
+                modIni = new IniFile(path + "/.." + "/mod.ini");
+                isConfigMod = true;
+            }
 
             modIni.KeyExists("Title", "Desc");
             string title = modIni.Read("Title", "Desc");
+
+            if (isConfigMod)
+            {
+                title += " (" + Path.GetFileName(path) + ")";
+            }
 
             this.title = title;
             this.path = path;

@@ -53,7 +53,7 @@ namespace SF_PlayerCommonMergeTool
             label.TextAlignment = TextAlignment.Right;
 
             comboBox = new ComboBox();
-            comboBox.Width = 240;
+            comboBox.Width = 320;
             comboBox.Height = 22;
             comboBox.Items.Add("Unmodded");
             comboBox.SelectedIndex = 0;

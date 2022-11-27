@@ -85,6 +85,19 @@ namespace SF_PlayerCommonMergeTool
             Load();
         }
 
+        private void TryAddMod(string folder)
+        {
+            string pacFile = folder + "/raw/character/playercommon.pac";
+            if (File.Exists(pacFile))
+            {
+                Mod mod = new Mod(folder);
+                if (mod.title != "MergedPlayerCommon")
+                {
+                    mods.Add(mod);
+                }
+            }
+        }
+
         private void Load()
         {
             if (storedData.installLocation != string.Empty)
@@ -103,20 +116,23 @@ namespace SF_PlayerCommonMergeTool
                 categories.Add(new Category("Open Zone Physics", "openzone", 0x72E0, 0xB20, CategoryStackPanel));
                 categories.Add(new Category("Cyberspace 3D Physics", "cyber3d", 0x7F80, 0xB20, CategoryStackPanel));
                 categories.Add(new Category("Cyberspace 2D Physics", "cyber2d", 0x8AA0, 0xB20, CategoryStackPanel));
-                categories.Add(new Category("Gameplay", "gameplay", 0x40, 0x72A0, CategoryStackPanel));
+                categories.Add(new Category("Combat & Misc", "gameplay", 0x40, 0x72A0, CategoryStackPanel));
+                categories.Add(new Category("Parry", "parry", 0x7Cd0, 0x24, CategoryStackPanel));
                 categories.Add(new Category("Cyloop", "cyloop", 0x5250, 0x1440, CategoryStackPanel));
 
                 string[] folders = Directory.GetDirectories(storedData.installLocation + "\\Mods\\");
 
                 foreach (var folder in folders)
                 {
-                    string pacFile = folder + "/raw/character/playercommon.pac";
-                    if (File.Exists(pacFile))
+                    if (Directory.Exists(folder + "/raw/"))
                     {
-                        Mod mod = new Mod(folder);
-                        if (mod.title != "MergedPlayerCommon")
+                        TryAddMod(folder);
+                    }
+                    else
+                    {
+                        foreach (var configuration in Directory.GetDirectories(folder))
                         {
-                            mods.Add(mod);
+                            TryAddMod(configuration);
                         }
                     }
                 }
@@ -232,7 +248,7 @@ namespace SF_PlayerCommonMergeTool
                     }
                 }
 
-                Thread.Sleep(200);
+                Thread.Sleep(500);
 
                 string rfl = $"{workspace}\\out_vanilla\\player_common.rfl";
                 byte[] file = File.ReadAllBytes(rfl);
