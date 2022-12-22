@@ -5,7 +5,12 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>playercommonmerge.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="playercommonmerge.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="FolderBrowserForWPF" Version="1.2.0" />
