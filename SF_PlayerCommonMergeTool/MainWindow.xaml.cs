@@ -27,6 +27,12 @@ namespace SF_PlayerCommonMergeTool
     /// </summary>
     public partial class MainWindow : Window
     {
+        private static string applicationName = "PlayerCommonMergeTool";
+        private static string updateServerURL = @"https://raw.githubusercontent.com/keanine/SF_PlayerCommonMerge/main/UpdateServer/";
+        private static string versionFileName = "version.ini";
+        private static string updateListFileName = "updatelist.txt";
+        private static string executableFileName = "SF_PlayerCommonMergeTool.exe";
+
         public ComboBox SetAllComboBox;
         public List<Category> categories = new List<Category>();
         public List<Mod> mods = new List<Mod>();
@@ -64,7 +70,7 @@ namespace SF_PlayerCommonMergeTool
         {
             InitializeComponent();
 
-            if (AutoUpdaterLib.Updater.CheckForUpdates())
+            if (AutoUpdaterLib.Updater.CheckForUpdates(applicationName, updateServerURL, versionFileName))
             {
                 MessageBoxResult result = System.Windows.MessageBox.Show("A new update has been found. Do you want to update?", "Update Found", MessageBoxButton.YesNo, MessageBoxImage.Information);
 
@@ -74,7 +80,7 @@ namespace SF_PlayerCommonMergeTool
                     proc1.UseShellExecute = true;
                     proc1.CreateNoWindow = false;
                     proc1.WorkingDirectory = @"";
-                    proc1.Arguments = "\"autoupdater.dll\"";
+                    proc1.Arguments = $"\"autoupdater.dll\" \"{applicationName}\" \"{updateServerURL}\" \"{versionFileName}\" \"{updateListFileName}\" \"{executableFileName}\"";
                     proc1.FileName = "dotnet.exe";
                     Process.Start(proc1);
 
