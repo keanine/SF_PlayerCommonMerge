@@ -13,8 +13,17 @@
 
   <ItemGroup>
     <Reference Include="autoupdater">
-      <HintPath>bin\Release\net6.0-windows\autoupdater.dll</HintPath>
+      <HintPath>autoupdater.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="autoupdater.runtimeconfig.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="HedgeArcPackFrontiers.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

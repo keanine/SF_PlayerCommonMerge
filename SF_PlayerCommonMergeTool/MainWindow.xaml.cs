@@ -45,14 +45,14 @@ namespace SF_PlayerCommonMergeTool
 "Title=\"MergedPlayerCommon\"\n" +
 "Description=\"\"\n" +
 "Version=1.0\n" +
-"Date=\"2022-11-18\"\n" +
+"Date=\"4567-23-01\"\n" +
 "Author=\"Keanine\"\n" +
 "AuthorURL=\"\"\n" +
 
 "[Main]" +
 "UpdateServer=\"\"\n" +
 "SaveFile=\"\"\n" +
-"ID=\"C1031F2D\"\n" +
+"ID=\"\"\n" +
 "IncludeDir0=\".\"\n" +
 "IncludeDirCount=1\n" +
 "DependsCount=0\n" +
