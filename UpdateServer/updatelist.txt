@@ -1,5 +1,4 @@
-SF_PlayerCommonMergeTool.exe
-SF_PlayerCommonMergeTool.dll
-SF_PlayerCommonMergeTool.runtimeconfig.json
 HedgeArcPackFrontiers.exe
-FolderBrowserForWPF.dll
+SF_PlayerCommonMergeTool.dll
+SF_PlayerCommonMergeTool.exe
+SF_PlayerCommonMergeTool.runtimeconfig.json
