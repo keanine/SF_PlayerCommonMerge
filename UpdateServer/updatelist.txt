@@ -1,0 +1,7 @@
+SF_PlayerCommonMergeTool.exe
+SF_PlayerCommonMergeTool.dll
+SF_PlayerCommonMergeTool.runtimeconfig.json
+HedgeArcPackFrontiers.exe
+FolderBrowserForWPF.dll
+autoupdater.dll
+autoupdater.runtimeconfig.json

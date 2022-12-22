@@ -7,4 +7,14 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="FolderBrowserForWPF" Version="1.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="autoupdater">
+      <HintPath>bin\Release\net6.0-windows\autoupdater.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

@@ -19,15 +19,15 @@ namespace SF_PlayerCommonMergeTool
         {
             bool isConfigMod = false;
 
-            IniFile modIni;
+            IniUtility modIni;
 
             if (File.Exists(path + "/mod.ini"))
             {
-                modIni = new IniFile(path + "/mod.ini");
+                modIni = new IniUtility(path + "/mod.ini");
             }
             else
             {
-                modIni = new IniFile(path + "/.." + "/mod.ini");
+                modIni = new IniUtility(path + "/.." + "/mod.ini");
                 isConfigMod = true;
             }
 
