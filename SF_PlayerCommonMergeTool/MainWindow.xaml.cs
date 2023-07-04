@@ -51,10 +51,10 @@ namespace SF_PlayerCommonMergeTool
 
         private string[] playerCommonUpdaterCleanup =
         {
-            "playercommon_PC_OLD.pac",
-            "playercommon_PC_u2.pac",
-            "u0.pos",
-            "u2_u0.pos"
+            //"playercommon_PC_OLD.pac",
+            //"playercommon_PC_u2.pac",
+            //"u0.pos",
+            //"u2_u0.pos"
         };
 
         public string iniTemplate =
@@ -81,8 +81,11 @@ ConfigSchemaFile=""""";
         {
             InitializeComponent();
 
-            Thread updateThread = new Thread(CheckForUpdates);
-            updateThread.Start();
+            if (!File.Exists("noupdate.txt"))
+            {
+                Thread updateThread = new Thread(CheckForUpdates);
+                updateThread.Start();
+            }
 
             appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\SonicFrontiersModding\\SF_PlayerCommonMerge\\";
             if (File.Exists(appdata + "\\storedData.json"))
@@ -306,16 +309,14 @@ ConfigSchemaFile=""""";
 
         private void UpdatePac(string modPac, string destination)
         {
+            File.Copy(modPac, destination, true);
+
             CleanUpPlayerCommonUpdater();
-            RunCMD("tools/PlayerCommonUpdaterV2.exe", modPac, "-2", "-nowait");
+            RunCMD("tools/PlayerCommonUpdaterV2.exe", $"\"{destination}\"", "-2", "-nowait");
 
             if (File.Exists("tools/playercommon.pac"))
             {
                 File.Copy("tools/playercommon.pac", destination, true);
-            }
-            else
-            {
-                File.Copy(modPac, destination, true);
             }
         }
 
