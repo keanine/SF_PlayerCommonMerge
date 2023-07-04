@@ -106,6 +106,11 @@ ConfigSchemaFile=""""";
             }
         }
 
+        private void AddToTitle(string message)
+        {
+            Window.GetWindow(this).Title += message;
+        }
+
         private void CheckForUpdates()
         {
             Thread.Sleep(2000);
@@ -125,6 +130,10 @@ ConfigSchemaFile=""""";
 
                     System.Environment.Exit(1);
                 }
+            }
+            else
+            {
+                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() => AddToTitle(" [up-to-date]")));
             }
         }
 
