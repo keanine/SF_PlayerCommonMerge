@@ -169,12 +169,21 @@ namespace SF_PlayerCommonMergeTool
                 space.Height = 10;
                 CategoryStackPanel.Children.Add(space);
 
-                categories.Add(new Category("Open Zone Physics", "openzone", 0x72E0, 0xB20, CategoryStackPanel));
-                categories.Add(new Category("Cyberspace 3D Physics", "cyber3d", 0x7F80, 0xB20, CategoryStackPanel));
-                categories.Add(new Category("Cyberspace 2D Physics", "cyber2d", 0x8AA0, 0xB20, CategoryStackPanel));
-                categories.Add(new Category("Combat & Misc", "gameplay", 0x40, 0x72A0, CategoryStackPanel));
-                categories.Add(new Category("Parry", "parry", 0x7Cd0, 0x24, CategoryStackPanel));
-                categories.Add(new Category("Cyloop", "cyloop", 0x5250, 0x1440, CategoryStackPanel));
+                // Game Update v1.1
+                //categories.Add(new Category("Open Zone Physics", "openzone", 0x72E0, 0xB20, CategoryStackPanel));
+                //categories.Add(new Category("Cyberspace 3D Physics", "cyber3d", 0x7F80, 0xB20, CategoryStackPanel));
+                //categories.Add(new Category("Cyberspace 2D Physics", "cyber2d", 0x8AA0, 0xB20, CategoryStackPanel));
+                //categories.Add(new Category("Combat & Misc", "gameplay", 0x40, 0x72A0, CategoryStackPanel));
+                //categories.Add(new Category("Parry", "parry", 0x7Cd0, 0x24, CategoryStackPanel));
+                //categories.Add(new Category("Cyloop", "cyloop", 0x5250, 0x1440, CategoryStackPanel));
+
+                // Game Update v1.3
+                categories.Add(new Category("Open Zone Physics", "openzone", 0x73B0, 0xC40, CategoryStackPanel));
+                categories.Add(new Category("Cyberspace 3D Physics", "cyber3d", 0x81A0, 0xC40, CategoryStackPanel));
+                categories.Add(new Category("Cyberspace 2D Physics", "cyber2d", 0x8DE0, 0xC40, CategoryStackPanel));
+                categories.Add(new Category("Combat & Misc", "gameplay", 0x40, 0x7370, CategoryStackPanel));
+                categories.Add(new Category("Parry", "parry", 0x7B54, 0x24, CategoryStackPanel));
+                categories.Add(new Category("Cyloop", "cyloop", 0x5410, 0x1440, CategoryStackPanel));
 
                 string[] folders = Directory.GetDirectories(modsFolder);
 
@@ -285,10 +294,7 @@ namespace SF_PlayerCommonMergeTool
 
                 File.Copy(storedData.installLocation + "\\image\\x64\\raw\\character\\playercommon.pac", workspace + "playercommon_vanilla.pac", true);
 
-                //string strCmdText;
-                //strCmdText = $"\"{workspace}playercommon_vanilla.pac\" {workspace}\\out_vanilla -E -T=rangers";
-                //System.Diagnostics.Process.Start("HedgeArcPackFrontiers.exe", strCmdText);
-                RunCMD("HedgeArcPackFrontiers.exe", $"\"{workspace}playercommon_vanilla.pac\" {workspace}\\out_vanilla -E -T=rangers");
+                RunCMD("HedgeArcPack.exe", $"\"{workspace}playercommon_vanilla.pac\" {workspace}\\out_vanilla -E -T=rangers");
 
                 foreach (var category in categories)
                 {
@@ -298,15 +304,10 @@ namespace SF_PlayerCommonMergeTool
                         string copyOfPac = workspace + "playercommon_" + category.id + ".pac";
                         File.Copy(mod.path + "\\raw\\character\\playercommon.pac", copyOfPac, true);
 
-                        //strCmdText = string.Empty;
-                        //strCmdText = $"\"{copyOfPac}\" {workspace}\\out_{category.id} -E -T=rangers";
-                        //System.Diagnostics.Process.Start("HedgeArcPackFrontiers.exe", strCmdText);
-                        RunCMD("HedgeArcPackFrontiers.exe", $"\"{copyOfPac}\" {workspace}\\out_{category.id} -E -T=rangers");
+                        RunCMD("HedgeArcPack.exe", $"\"{copyOfPac}\" {workspace}\\out_{category.id} -E -T=rangers");
 
                     }
                 }
-
-                //Thread.Sleep(500);
 
                 string rfl = $"{workspace}\\out_vanilla\\player_common.rfl";
                 byte[] file = File.ReadAllBytes(rfl);
@@ -327,11 +328,7 @@ namespace SF_PlayerCommonMergeTool
 
                 File.WriteAllBytes(rfl, file);
 
-                //strCmdText = $"\"{workspace}out_vanilla\" {workspace}\\out_vanilla.pac -P -T=rangers";
-                //System.Diagnostics.Process.Start("HedgeArcPackFrontiers.exe", strCmdText);
-                RunCMD("HedgeArcPackFrontiers.exe", $"\"{workspace}out_vanilla\" {workspace}\\out_vanilla.pac -P -T=rangers");
-
-                //Thread.Sleep(200);
+                RunCMD("HedgeArcPack.exe", $"\"{workspace}out_vanilla\" {workspace}\\out_vanilla.pac -P -T=rangers");
 
                 File.Move($"{workspace}\\out_vanilla.pac", newPacFolder + "playercommon.pac", true);
                 File.WriteAllText(modFolder + "\\mod.ini", iniTemplate);

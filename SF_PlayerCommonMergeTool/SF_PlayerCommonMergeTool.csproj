@@ -26,7 +26,7 @@
     <None Update="autoupdater.runtimeconfig.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="HedgeArcPackFrontiers.exe">
+    <None Update="HedgeArcPack.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
