@@ -29,6 +29,8 @@ namespace SF_PlayerCommonMergeTool
     {
         private static string applicationName = "PlayerCommonMergeTool";
         private static string updateServerURL = @"https://raw.githubusercontent.com/keanine/SF_PlayerCommonMerge/main/UpdateServer/";
+        private static string internalUpdateServerURL = @"https://raw.githubusercontent.com/keanine/SF_PlayerCommonMerge/main/InternalUpdateServer/";
+        private static string devUpdateServerURL = @"https://raw.githubusercontent.com/keanine/SF_PlayerCommonMerge/main/DevUpdateServer/";
         private static string versionFileName = "version.ini";
         private static string updateListFileName = "updatelist.txt";
         private static string executableFileName = "SF_PlayerCommonMergeTool.exe";
@@ -45,6 +47,8 @@ namespace SF_PlayerCommonMergeTool
         public StoredData storedData = new StoredData();
 
         //public bool nintendoSwitchMode = false;
+
+        public bool storedInstallFolderExists = false;
 
         public string iniTemplate =
 "[Desc]\n" +
@@ -70,6 +74,37 @@ namespace SF_PlayerCommonMergeTool
         {
             InitializeComponent();
 
+            //IniUtility settings = new IniUtility("settings.ini");
+            //nintendoSwitchMode = int.Parse(settings.Read("nintendoSwitchMode", "Settings")) == 1;
+
+            Thread updateThread = new Thread(CheckForUpdates);
+            updateThread.Start();
+
+            appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\SonicFrontiersModding\\SF_PlayerCommonMerge\\";
+            if (File.Exists(appdata + "\\storedData.json"))
+            {
+                LoadStoredData();
+                GameFolderTextbox.Text = storedData.installLocation;
+
+                storedInstallFolderExists = Directory.Exists(storedData.installLocation);
+                if (storedInstallFolderExists)
+                {
+                    IniUtility utility = new IniUtility(storedData.installLocation + "\\cpkredir.ini");
+                    modsFolder = Path.GetDirectoryName(utility.Read("ModsDbIni", "CPKREDIR")) + "\\";
+
+                    Load();
+                }
+                else
+                {
+                    MessageBox.Show("Your game folder has moved or does not exist. Please update it's location to continue using this tool");
+                }
+
+            }
+        }
+
+        private void CheckForUpdates()
+        {
+            Thread.Sleep(5000);
             if (AutoUpdaterLib.Updater.CheckForUpdates(applicationName, updateServerURL, versionFileName))
             {
                 MessageBoxResult result = System.Windows.MessageBox.Show("A new update has been found. Do you want to update?", "Update Found", MessageBoxButton.YesNo, MessageBoxImage.Information);
@@ -86,21 +121,6 @@ namespace SF_PlayerCommonMergeTool
 
                     System.Environment.Exit(1);
                 }
-            }
-
-            //IniUtility settings = new IniUtility("settings.ini");
-            //nintendoSwitchMode = int.Parse(settings.Read("nintendoSwitchMode", "Settings")) == 1;
-
-            appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\SonicFrontiersModding\\SF_PlayerCommonMerge\\";
-            if (File.Exists(appdata + "\\storedData.json"))
-            {
-                LoadStoredData();
-                GameFolderTextbox.Text = storedData.installLocation;
-
-                IniUtility utility = new IniUtility(storedData.installLocation + "\\cpkredir.ini");
-                modsFolder = Path.GetDirectoryName(utility.Read("ModsDbIni", "CPKREDIR")) + "\\";
-
-                Load();
             }
         }
 
@@ -136,7 +156,7 @@ namespace SF_PlayerCommonMergeTool
 
         private void Load()
         {
-            if (storedData.installLocation != string.Empty)
+            if (storedData.installLocation != string.Empty && Directory.Exists(storedData.installLocation))
             {
                 CategoryStackPanel.Children.Clear();
                 categories.Clear();
@@ -332,6 +352,8 @@ namespace SF_PlayerCommonMergeTool
                     }
                 }
                 SaveStoredData();
+
+                MessageBox.Show("You can now close this tool, open Hedge Mod Manager and enable the new mod MergedPlayerCommon", "Merge complete!");
             }
         }
 
