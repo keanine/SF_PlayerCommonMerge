@@ -1,4 +1,5 @@
-HedgeArcPack.exe
+tools/HedgeArcPack.exe
+tools/PlayerCommonUpdaterV2.exe
 SF_PlayerCommonMergeTool.dll
 SF_PlayerCommonMergeTool.exe
 SF_PlayerCommonMergeTool.runtimeconfig.json

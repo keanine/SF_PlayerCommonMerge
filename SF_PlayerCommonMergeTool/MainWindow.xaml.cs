@@ -19,6 +19,7 @@ using ComboBox = System.Windows.Controls.ComboBox;
 using Microsoft.Win32;
 using Path = System.IO.Path;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace SF_PlayerCommonMergeTool
 {
@@ -39,43 +40,46 @@ namespace SF_PlayerCommonMergeTool
         public List<Category> categories = new List<Category>();
         public List<Mod> mods = new List<Mod>();
 
-        public string workspace = "temp\\";
+        public string workspace = "MergeTemp\\";
 
         string appdata = string.Empty;
         string modsFolder = string.Empty;
 
         public StoredData storedData = new StoredData();
 
-        //public bool nintendoSwitchMode = false;
-
         public bool storedInstallFolderExists = false;
 
-        public string iniTemplate =
-"[Desc]\n" +
-"Title=\"MergedPlayerCommon\"\n" +
-"Description=\"\"\n" +
-"Version=1.0\n" +
-"Date=\"4567-23-01\"\n" +
-"Author=\"Keanine\"\n" +
-"AuthorURL=\"\"\n" +
+        private string[] playerCommonUpdaterCleanup =
+        {
+            "playercommon_PC_OLD.pac",
+            "playercommon_PC_u2.pac",
+            "u0.pos",
+            "u2_u0.pos"
+        };
 
-"[Main]" +
-"UpdateServer=\"\"\n" +
-"SaveFile=\"\"\n" +
-"ID=\"\"\n" +
-"IncludeDir0=\".\"\n" +
-"IncludeDirCount=1\n" +
-"DependsCount=0\n" +
-"DLLFile=\"\"\n" +
-"CodeFile=\"\"\n" +
-"ConfigSchemaFile=\"\"\n";
+        public string iniTemplate =
+@"[Desc]
+Title=""MergedPlayerCommon""
+Description=""None""
+Version=1.0
+Date=""2023-07-04""
+Author=""Keanine""
+AuthorURL=""https://github.com/keanine/SF_PlayerCommonMerge""
+
+[Main]
+UpdateServer=""""
+SaveFile=""""
+ID=""""
+IncludeDir0="".""
+IncludeDirCount=1
+DependsCount=0
+DLLFile=""""
+CodeFile=""""
+ConfigSchemaFile=""""";
 
         public MainWindow()
         {
             InitializeComponent();
-
-            //IniUtility settings = new IniUtility("settings.ini");
-            //nintendoSwitchMode = int.Parse(settings.Read("nintendoSwitchMode", "Settings")) == 1;
 
             Thread updateThread = new Thread(CheckForUpdates);
             updateThread.Start();
@@ -104,7 +108,7 @@ namespace SF_PlayerCommonMergeTool
 
         private void CheckForUpdates()
         {
-            Thread.Sleep(5000);
+            Thread.Sleep(2000);
             if (AutoUpdaterLib.Updater.CheckForUpdates(applicationName, updateServerURL, versionFileName))
             {
                 MessageBoxResult result = System.Windows.MessageBox.Show("A new update has been found. Do you want to update?", "Update Found", MessageBoxButton.YesNo, MessageBoxImage.Information);
@@ -184,6 +188,10 @@ namespace SF_PlayerCommonMergeTool
                 categories.Add(new Category("Combat & Misc", "gameplay", 0x40, 0x7370, CategoryStackPanel));
                 categories.Add(new Category("Parry", "parry", 0x7B54, 0x24, CategoryStackPanel));
                 categories.Add(new Category("Cyloop", "cyloop", 0x5410, 0x1440, CategoryStackPanel));
+
+                categories.Add(new Category("Spin Dash", "spinboost", 0x7E50, 0xF8, CategoryStackPanel));
+                categories.Add(new Category("Spin Dash (Cyber 3D)", "spinboostcy3d", 0x8C40, 0xF8, CategoryStackPanel));
+                categories.Add(new Category("Spin Dash (Cyber 2D)", "spinboostcy2d", 0x9880, 0xF8, CategoryStackPanel));
 
                 string[] folders = Directory.GetDirectories(modsFolder);
 
@@ -275,6 +283,33 @@ namespace SF_PlayerCommonMergeTool
             }
         }
 
+        private void CleanUpPlayerCommonUpdater()
+        {
+            foreach (string file in playerCommonUpdaterCleanup)
+            {
+                if (File.Exists("tools/" + file))
+                {
+                    File.Delete("tools/" + file);
+                }
+            }
+            File.Delete("tools/playercommon.pac");
+        }
+
+        private void UpdatePac(string modPac, string destination)
+        {
+            CleanUpPlayerCommonUpdater();
+            RunCMD("tools/PlayerCommonUpdaterV2.exe", modPac, "-2", "-nowait");
+
+            if (File.Exists("tools/playercommon.pac"))
+            {
+                File.Copy("tools/playercommon.pac", destination, true);
+            }
+            else
+            {
+                File.Copy(modPac, destination, true);
+            }
+        }
+
         private void MergeButton_Click(object sender, RoutedEventArgs e)
         {
             if (storedData.installLocation != string.Empty)
@@ -294,7 +329,8 @@ namespace SF_PlayerCommonMergeTool
 
                 File.Copy(storedData.installLocation + "\\image\\x64\\raw\\character\\playercommon.pac", workspace + "playercommon_vanilla.pac", true);
 
-                RunCMD("HedgeArcPack.exe", $"\"{workspace}playercommon_vanilla.pac\" {workspace}\\out_vanilla -E -T=rangers");
+                //RunCMD("tools/HedgeArcPack.exe", $"\"{workspace}playercommon_vanilla.pac\" {workspace}out_vanilla -E -T=rangers");
+                RunCMD("tools/HedgeArcPack.exe", $"\"{workspace}playercommon_vanilla.pac\"", $"{workspace}out_vanilla", "-E", "-T=rangers");
 
                 foreach (var category in categories)
                 {
@@ -302,12 +338,17 @@ namespace SF_PlayerCommonMergeTool
                     {
                         Mod mod = mods[category.comboBox.SelectedIndex - 1];
                         string copyOfPac = workspace + "playercommon_" + category.id + ".pac";
-                        File.Copy(mod.path + "\\raw\\character\\playercommon.pac", copyOfPac, true);
 
-                        RunCMD("HedgeArcPack.exe", $"\"{copyOfPac}\" {workspace}\\out_{category.id} -E -T=rangers");
+                        // Update the pac file
+                        UpdatePac(mod.path + "\\raw\\character\\playercommon.pac", copyOfPac);
+
+                        //RunCMD("tools/HedgeArcPack.exe", $"\"{copyOfPac}\" {workspace}out_{category.id} -E -T=rangers");
+                        RunCMD("tools/HedgeArcPack.exe", $"\"{copyOfPac}\"", $"{workspace}out_{category.id}", "-E", "-T=rangers");
 
                     }
                 }
+
+                CleanUpPlayerCommonUpdater();
 
                 string rfl = $"{workspace}\\out_vanilla\\player_common.rfl";
                 byte[] file = File.ReadAllBytes(rfl);
@@ -328,7 +369,8 @@ namespace SF_PlayerCommonMergeTool
 
                 File.WriteAllBytes(rfl, file);
 
-                RunCMD("HedgeArcPack.exe", $"\"{workspace}out_vanilla\" {workspace}\\out_vanilla.pac -P -T=rangers");
+                //RunCMD("tools/HedgeArcPack.exe", $"\"{workspace}out_vanilla\" {workspace}out_vanilla.pac -P -T=rangers");
+                RunCMD("tools/HedgeArcPack.exe", $"\"{workspace}out_vanilla\"", $"{workspace}out_vanilla.pac", "-P", "-T=rangers");
 
                 File.Move($"{workspace}\\out_vanilla.pac", newPacFolder + "playercommon.pac", true);
                 File.WriteAllText(modFolder + "\\mod.ini", iniTemplate);
@@ -365,14 +407,10 @@ namespace SF_PlayerCommonMergeTool
             FolderBrowserForWPF.Dialog browserDialog = new FolderBrowserForWPF.Dialog();
             browserDialog.Title = "Select your SonicFrontiers root folder";
 
-            //OpenFileDialog browserDialog = new OpenFileDialog();
-            //browserDialog.Filter = "EXE files (*.exe)|*.exe";
-
             while (true)
             {
                 if (browserDialog.ShowDialog() == true)
                 {
-                    //string folder = System.IO.Path.GetDirectoryName(browserDialog.FileName);
                     string folder = browserDialog.FileName;
                     if (folder != string.Empty && Directory.Exists(folder))
                     {
@@ -395,15 +433,9 @@ namespace SF_PlayerCommonMergeTool
                         storedData.installLocation = folder;
                         GameFolderTextbox.Text = folder;
 
-                        //if (nintendoSwitchMode)
-                        //{
-                        //    modsFolder = "\\Mods\\";
-                        //}
-                        //else
-                        {
-                            IniUtility utility = new IniUtility(storedData.installLocation + "\\cpkredir.ini");
-                            modsFolder = Path.GetDirectoryName(utility.Read("ModsDbIni", "CPKREDIR")) + "\\";
-                        }
+                        IniUtility utility = new IniUtility(storedData.installLocation + "\\cpkredir.ini");
+                        modsFolder = Path.GetDirectoryName(utility.Read("ModsDbIni", "CPKREDIR")) + "\\";
+                        
                         MergeButton.IsEnabled = true;
 
                         if (!Directory.Exists(appdata))
@@ -434,19 +466,23 @@ namespace SF_PlayerCommonMergeTool
             }
         }
 
-        private static void RunCMD(string process, string args)
+        private static void RunCMD(string process, params string[] args)
         {
-            var cmd = new System.Diagnostics.Process();
-            var startInfo = new System.Diagnostics.ProcessStartInfo
+            string allArgs = string.Empty;
+            foreach (string arg in args)
             {
-                WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+                allArgs += arg + " ";
+            }
+
+            var startInfo = new ProcessStartInfo
+            {
                 FileName = process,
-                Arguments = args
+                Arguments = allArgs,
+                WindowStyle = ProcessWindowStyle.Hidden,
+                CreateNoWindow = true
             };
 
-            cmd.StartInfo = startInfo;
-
-            cmd.Start();
+            var cmd = Process.Start(startInfo);
             cmd.WaitForExit();
         }
     }

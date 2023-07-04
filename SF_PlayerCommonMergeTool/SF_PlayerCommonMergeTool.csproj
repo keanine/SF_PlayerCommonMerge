@@ -18,15 +18,18 @@
 
   <ItemGroup>
     <Reference Include="autoupdater">
-      <HintPath>autoupdater.dll</HintPath>
+      <HintPath>tools/autoupdater.dll</HintPath>
     </Reference>
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="autoupdater.runtimeconfig.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="tools/HedgeArcPack.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="HedgeArcPack.exe">
+    <None Update="tools/PlayerCommonUpdaterV2.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="autoupdater.runtimeconfig.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

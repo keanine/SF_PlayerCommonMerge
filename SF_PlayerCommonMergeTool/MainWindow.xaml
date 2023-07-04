@@ -5,11 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SF_PlayerCommonMergeTool"
         mc:Ignorable="d"
-        Title="PlayerCommon Merge Tool v1.2" Height="330" Width="540" ResizeMode="NoResize">
+        Title="PlayerCommon Merge Tool v1.3" Height="410" Width="540" ResizeMode="CanResize" MinWidth="540" MaxWidth="540" MinHeight="150">
     <Grid>
         <TextBox x:Name="GameFolderTextbox" Margin="10,10,92,0" TextWrapping="NoWrap" Text="" VerticalAlignment="Top" IsReadOnly="True"/>
         <Button x:Name="MergeButton" Content="Merge" Margin="10,0,10,10" Click="MergeButton_Click" Height="20" VerticalAlignment="Bottom"/>
-        <StackPanel x:Name="CategoryStackPanel" Margin="10,51,10,35"/>
+        <ScrollViewer Margin="10,51,10,35" VerticalScrollBarVisibility="Auto">
+            <StackPanel x:Name="CategoryStackPanel"/>
+        </ScrollViewer>
         <Button x:Name="BrowseButton" Content="Browse" Margin="0,9,10,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="77" Click="BrowseButton_Click"/>
 
     </Grid>
