@@ -117,26 +117,33 @@ ConfigSchemaFile=""""";
         private void CheckForUpdates()
         {
             Thread.Sleep(2000);
-            if (AutoUpdaterLib.Updater.CheckForUpdates(applicationName, updateServerURL, versionFileName))
+            try
             {
-                MessageBoxResult result = System.Windows.MessageBox.Show("A new update has been found. Do you want to update?", "Update Found", MessageBoxButton.YesNo, MessageBoxImage.Information);
-
-                if (result == MessageBoxResult.Yes)
+                if (AutoUpdaterLib.Updater.CheckForUpdates(applicationName, updateServerURL, versionFileName))
                 {
-                    var proc1 = new ProcessStartInfo();
-                    proc1.UseShellExecute = true;
-                    proc1.CreateNoWindow = false;
-                    proc1.WorkingDirectory = @"";
-                    proc1.Arguments = $"\"autoupdater.dll\" \"{applicationName}\" \"{updateServerURL}\" \"{versionFileName}\" \"{updateListFileName}\" \"{executableFileName}\"";
-                    proc1.FileName = "dotnet.exe";
-                    Process.Start(proc1);
+                    MessageBoxResult result = System.Windows.MessageBox.Show("A new update has been found. Do you want to update?", "Update Found", MessageBoxButton.YesNo, MessageBoxImage.Information);
 
-                    System.Environment.Exit(1);
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        var proc1 = new ProcessStartInfo();
+                        proc1.UseShellExecute = true;
+                        proc1.CreateNoWindow = false;
+                        proc1.WorkingDirectory = @"";
+                        proc1.Arguments = $"\"autoupdater.dll\" \"{applicationName}\" \"{updateServerURL}\" \"{versionFileName}\" \"{updateListFileName}\" \"{executableFileName}\"";
+                        proc1.FileName = "dotnet.exe";
+                        Process.Start(proc1);
+
+                        System.Environment.Exit(1);
+                    }
+                }
+                else
+                {
+                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() => AddToTitle(" [up-to-date]")));
                 }
             }
-            else
+            catch (Exception e)
             {
-                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() => AddToTitle(" [up-to-date]")));
+                MessageBox.Show(e.Message, "Error");
             }
         }
 
