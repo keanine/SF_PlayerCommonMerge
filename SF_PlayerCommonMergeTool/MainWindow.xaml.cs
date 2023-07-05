@@ -194,7 +194,7 @@ ConfigSchemaFile=""""";
                 //categories.Add(new Category("Cyloop", "cyloop", 0x5250, 0x1440, CategoryStackPanel));
 
                 // Game Update v1.3
-                categories.Add(new Category("Open Zone Physics", "openzone", 0x73B0, 0xC40, CategoryStackPanel));
+                categories.Add(new Category("Open Zone Physics", "openzone", 0x73B0, 0xDE8, CategoryStackPanel)); //Includes water physics
                 categories.Add(new Category("Cyberspace 3D Physics", "cyber3d", 0x81A0, 0xC40, CategoryStackPanel));
                 categories.Add(new Category("Cyberspace 2D Physics", "cyber2d", 0x8DE0, 0xC40, CategoryStackPanel));
                 categories.Add(new Category("Combat & Misc", "gameplay", 0x40, 0x7370, CategoryStackPanel));
@@ -488,12 +488,18 @@ ConfigSchemaFile=""""";
             {
                 FileName = process,
                 Arguments = allArgs,
+                RedirectStandardError = true,
                 WindowStyle = ProcessWindowStyle.Hidden,
                 CreateNoWindow = true
             };
 
             var cmd = Process.Start(startInfo);
+            string errors = cmd.StandardError.ReadToEnd();
             cmd.WaitForExit();
+            if (errors != string.Empty)
+            {
+                throw new Exception(errors);
+            }
         }
     }
 }
