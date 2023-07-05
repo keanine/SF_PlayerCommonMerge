@@ -7,12 +7,25 @@
         mc:Ignorable="d"
         Title="PlayerCommon Merge Tool v1.4" Height="410" Width="540" ResizeMode="CanResize" MinWidth="540" MaxWidth="540" MinHeight="150">
     <Grid>
-        <TextBox x:Name="GameFolderTextbox" Margin="10,10,92,0" TextWrapping="NoWrap" Text="" VerticalAlignment="Top" IsReadOnly="True"/>
+        <Menu DockPanel.Dock="Top" Height="20" VerticalAlignment="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Exit" />
+            </MenuItem>
+            <MenuItem Header="_Settings">
+                <MenuItem Header="_Categories" />
+                <MenuItem Header="_Preferences" />
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Header="_About" />
+                <MenuItem Header="_Check for Updates" />
+            </MenuItem>
+        </Menu>
+        <TextBox x:Name="GameFolderTextbox" Margin="10,25,92,0" TextWrapping="NoWrap" Text="" VerticalAlignment="Top" IsReadOnly="True" Height="20"/>
         <Button x:Name="MergeButton" Content="Merge" Margin="10,0,10,10" Click="MergeButton_Click" Height="20" VerticalAlignment="Bottom"/>
-        <ScrollViewer Margin="10,51,10,35" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer Margin="10,60,10,35" VerticalScrollBarVisibility="Auto">
             <StackPanel x:Name="CategoryStackPanel"/>
         </ScrollViewer>
-        <Button x:Name="BrowseButton" Content="Browse" Margin="0,9,10,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="77" Click="BrowseButton_Click"/>
+        <Button x:Name="BrowseButton" Content="Browse" Margin="0,25,10,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="77" Click="BrowseButton_Click"/>
 
     </Grid>
 </Window>

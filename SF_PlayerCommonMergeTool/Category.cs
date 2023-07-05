@@ -55,7 +55,7 @@ namespace SF_PlayerCommonMergeTool
             comboBox = new ComboBox();
             comboBox.Width = 320;
             comboBox.Height = 22;
-            comboBox.Items.Add("Unmodded");
+            comboBox.Items.Add("Vanilla");
             comboBox.SelectedIndex = 0;
 
             panel.Children.Add(label);
