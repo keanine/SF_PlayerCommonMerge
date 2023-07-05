@@ -347,7 +347,7 @@ ConfigSchemaFile=""""";
                 File.Copy(storedData.installLocation + "\\image\\x64\\raw\\character\\playercommon.pac", workspace + "playercommon_vanilla.pac", true);
 
                 //RunCMD("tools/HedgeArcPack.exe", $"\"{workspace}playercommon_vanilla.pac\" {workspace}out_vanilla -E -T=rangers");
-                RunCMD("tools/HedgeArcPack.exe", $"\"{workspace}playercommon_vanilla.pac\"", $"{workspace}out_vanilla", "-E", "-T=rangers");
+                RunCMD("tools/HedgeArcPack.exe", $"\"{workspace}playercommon_vanilla.pac\"", $"\"{workspace}out_vanilla\"", "-E", "-T=rangers");
 
                 foreach (var category in categories)
                 {
@@ -360,7 +360,7 @@ ConfigSchemaFile=""""";
                         UpdatePac(mod.path + "\\raw\\character\\playercommon.pac", copyOfPac);
 
                         //RunCMD("tools/HedgeArcPack.exe", $"\"{copyOfPac}\" {workspace}out_{category.id} -E -T=rangers");
-                        RunCMD("tools/HedgeArcPack.exe", $"\"{copyOfPac}\"", $"{workspace}out_{category.id}", "-E", "-T=rangers");
+                        RunCMD("tools/HedgeArcPack.exe", $"\"{copyOfPac}\"", $"\"{workspace}out_{category.id}\"", "-E", "-T=rangers");
 
                     }
                 }
@@ -387,7 +387,7 @@ ConfigSchemaFile=""""";
                 File.WriteAllBytes(rfl, file);
 
                 //RunCMD("tools/HedgeArcPack.exe", $"\"{workspace}out_vanilla\" {workspace}out_vanilla.pac -P -T=rangers");
-                RunCMD("tools/HedgeArcPack.exe", $"\"{workspace}out_vanilla\"", $"{workspace}out_vanilla.pac", "-P", "-T=rangers");
+                RunCMD("tools/HedgeArcPack.exe", $"\"{workspace}out_vanilla\"", $"\"{workspace}out_vanilla.pac\"", "-P", "-T=rangers");
 
                 File.Move($"{workspace}\\out_vanilla.pac", newPacFolder + "playercommon.pac", true);
                 File.WriteAllText(modFolder + "\\mod.ini", iniTemplate);
