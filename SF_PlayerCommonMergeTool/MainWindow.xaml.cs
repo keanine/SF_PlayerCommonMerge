@@ -363,6 +363,10 @@ ConfigSchemaFile=""""";
                         RunCMD("tools/HedgeArcPack.exe", $"\"{copyOfPac}\"", $"\"{workspace}out_{category.id}\"", "-E", "-T=rangers");
 
                     }
+                    else if (category.comboBox.SelectedIndex == 0)
+                    {
+                        RunCMD("tools/HedgeArcPack.exe", $"\"{workspace}playercommon_vanilla.pac\"", $"\"{workspace}out_{category.id}\"", "-E", "-T=rangers");
+                    }
                 }
 
                 CleanUpPlayerCommonUpdater();
