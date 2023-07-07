@@ -38,6 +38,7 @@ namespace SF_PlayerCommonMergeTool
 
         public ComboBox SetAllComboBox;
         public List<Category> categories = new List<Category>();
+        public List<Category> addonCategories = new List<Category>();
         public List<Mod> mods = new List<Mod>();
 
         public string workspace = "MergeTemp\\";
@@ -86,7 +87,7 @@ ConfigSchemaFile=""""";
             InitializeComponent();
 
 
-            Preferences.appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\SonicFrontiersModding\\SF_PlayerCommonMerge\\";
+            Preferences.appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\SonicFrontiersModding\\SF_PlayerCommonMerge\\";
             Preferences.Initialize();
 
             if (Directory.Exists("tools"))
@@ -114,7 +115,7 @@ ConfigSchemaFile=""""";
                 updateThread.Start();
             }
 
-            if (File.Exists(Preferences.appdata + "\\storedData.json"))
+            if (File.Exists(Preferences.appData + "\\storedData.json"))
             {
                 LoadStoredData();
                 GameFolderTextbox.Text = storedData.installLocation;
@@ -190,14 +191,14 @@ ConfigSchemaFile=""""";
 
         public void LoadStoredData()
         {
-            string json = File.ReadAllText(Preferences.appdata + "storedData.json");
+            string json = File.ReadAllText(Preferences.appData + "storedData.json");
             storedData = (StoredData)JsonSerializer.Deserialize(json, typeof(StoredData));
         }
 
         public void SaveStoredData()
         {
             string json = JsonSerializer.Serialize(storedData);
-            File.WriteAllText(Preferences.appdata + "storedData.json", json);
+            File.WriteAllText(Preferences.appData + "storedData.json", json);
         }
 
         private void LoadButton_Click(object sender, RoutedEventArgs e)
@@ -242,18 +243,24 @@ ConfigSchemaFile=""""";
                 //categories.Add(new Category("Cyloop", "cyloop", 0x5250, 0x1440, CategoryStackPanel));
 
                 // Game Update v1.3
-                categories.Add(new Category("Open Zone Physics", "openzone", 0x73B0, 0xDE8, CategoryStackPanel)); //Includes water physics
-                categories.Add(new Category("Cyberspace 3D Physics", "cyber3d", 0x81A0, 0xC40, CategoryStackPanel));
-                categories.Add(new Category("Cyberspace 2D Physics", "cyber2d", 0x8DE0, 0xC40, CategoryStackPanel));
-                categories.Add(new Category("Combat & Misc", "gameplay", 0x40, 0x7370, CategoryStackPanel));
-                categories.Add(new Category("Parry", "parry", 0x7B54, 0x24, CategoryStackPanel));
-                categories.Add(new Category("Cyloop", "cyloop", 0x5410, 0x1440, CategoryStackPanel));
+                categories.Add(new Category("Open Zone Physics", "openzone", 0x73B0, 0xDE8, 1, CategoryStackPanel)); //Includes water physics
+                categories.Add(new Category("Cyberspace 3D Physics", "cyber3d", 0x81A0, 0xC40, 2, CategoryStackPanel));
+                categories.Add(new Category("Cyberspace 2D Physics", "cyber2d", 0x8DE0, 0xC40, 3, CategoryStackPanel));
+                categories.Add(new Category("Combat & Misc", "gameplay", 0x40, 0x7370, 4, CategoryStackPanel));
+                categories.Add(new Category("Cyloop", "cyloop", 0x5410, 0x1440, 5, CategoryStackPanel));
 
-                categories.Add(new Category("Spin Dash", "spinboost", 0x7E50, 0xF8, CategoryStackPanel));
-                categories.Add(new Category("Spin Dash (Cyber 3D)", "spinboostcy3d", 0x8C40, 0xF8, CategoryStackPanel));
-                categories.Add(new Category("Spin Dash (Cyber 2D)", "spinboostcy2d", 0x9880, 0xF8, CategoryStackPanel));
+
+                Category categoryParry = new Category("Parry", "parry", 6, null, new CategoryChunk(0x7B54, 0x24));
+                Category categorySpinDash = new Category("Spin Dash", "spindash", 7, null,
+                    new CategoryChunk(0x7E50, 0xF8),
+                    new CategoryChunk(0x8C40, 0xF8),
+                    new CategoryChunk(0x9880, 0xF8));
+                SerializeCategory(categoryParry);
+                SerializeCategory(categorySpinDash);
 
                 Debugging.WriteToLog("Loaded categories");
+
+                //SerializeCategories();
 
                 string[] folders = Directory.GetDirectories(modsFolder);
 
@@ -308,6 +315,28 @@ ConfigSchemaFile=""""";
                                         break;
                                 }
                             }
+                            foreach (var category in addonCategories)
+                            {
+                                if (category.HasOffset)
+                                {
+                                    if (selection.id == category.id)
+                                    {
+                                        for (int i = 1; i < category.comboBox.Items.Count; i++)
+                                        {
+                                            var item = category.comboBox.Items[i];
+                                            if ((item as Mod).title == selection.modTitle)
+                                            {
+                                                category.comboBox.SelectedItem = item;
+                                                success = true;
+                                            }
+                                            if (success)
+                                                break;
+                                        }
+                                    }
+                                    if (success)
+                                        break;
+                                }
+                            }
                         }
                     }
                 }
@@ -318,6 +347,29 @@ ConfigSchemaFile=""""";
                     Debugging.WriteToLog("No mods folder found");
                 }
                 Debugging.WriteToLog("Finished Loading");
+            }
+        }
+
+        private void SerializeCategories()
+        {
+            foreach (var category in categories)
+            {
+                SerializeCategory(category);
+            }
+        }
+        private void SerializeCategory(Category category)
+        {
+            string directory = Path.Combine(Preferences.appData, "categories");
+            string filePath = Path.Combine(directory, $"{category.id}.json");
+            Directory.CreateDirectory(directory);
+
+            if (!File.Exists(filePath))
+            {
+                if (category.HasOffset)
+                {
+                    string jsonCategory = JsonSerializer.Serialize(category, new JsonSerializerOptions() { WriteIndented = true });
+                    File.WriteAllText(filePath, jsonCategory);
+                }
             }
         }
 
@@ -337,11 +389,19 @@ ConfigSchemaFile=""""";
             {
                 cateogry.comboBox.Items.Add(value);
             }
+            foreach (var cateogry in addonCategories)
+            {
+                cateogry.comboBox.Items.Add(value);
+            }
         }
 
         private void SetAllComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             foreach (var cateogry in categories)
+            {
+                cateogry.comboBox.SelectedIndex = (sender as ComboBox).SelectedIndex;
+            }
+            foreach (var cateogry in addonCategories)
             {
                 cateogry.comboBox.SelectedIndex = (sender as ComboBox).SelectedIndex;
             }
@@ -377,6 +437,9 @@ ConfigSchemaFile=""""";
         {
             if (storedData.installLocation != string.Empty)
             {
+                List<Category> mergeCategories = categories;
+                mergeCategories.AddRange(addonCategories);
+
                 Debugging.WriteToLog("Running Merge");
 
                 string modFolder = modsFolder + "MergedPlayerCommon";
@@ -398,7 +461,7 @@ ConfigSchemaFile=""""";
                 Debugging.WriteToLog($"Extracting: \"{workspace}playercommon_vanilla.pac\" to \"{workspace}out_vanilla\"");
                 RunCMD("tools/HedgeArcPack.exe", $"\"{workspace}playercommon_vanilla.pac\"", $"\"{workspace}out_vanilla\"", "-E", "-T=rangers");
 
-                foreach (var category in categories)
+                foreach (var category in mergeCategories)
                 {
                     if (category.HasOffset && category.comboBox.SelectedIndex > 0)
                     {
@@ -427,17 +490,37 @@ ConfigSchemaFile=""""";
                 byte[] file = File.ReadAllBytes(rfl);
                 Debugging.WriteToLog($"Read vanilla RFL successfully");
 
-                foreach (var category in categories)
+                //foreach (var category in categories)
+                //{
+                //    if (category.HasOffset && category.comboBox.SelectedIndex >= 0)
+                //    {
+                //        Debugging.WriteToLog($"Merging bytes from {category.id} RFL");
+                //        byte[] categoryFile = File.ReadAllBytes($"{workspace}\\out_{category.id}\\player_common.rfl");
+                //        category.data = categoryFile.ToList().GetRange(category.offset, category.size).ToArray();
+
+                //        for (int i = 0; i < category.size; i++)
+                //        {
+                //            file[i + category.offset] = category.data[i];
+                //        }
+                //        Debugging.WriteToLog($"Successfully merged bytes from {category.id} RFL");
+                //    }
+                //}
+
+                foreach (var category in mergeCategories)
                 {
                     if (category.HasOffset && category.comboBox.SelectedIndex >= 0)
                     {
                         Debugging.WriteToLog($"Merging bytes from {category.id} RFL");
                         byte[] categoryFile = File.ReadAllBytes($"{workspace}\\out_{category.id}\\player_common.rfl");
-                        category.data = categoryFile.ToList().GetRange(category.offset, category.size).ToArray();
 
-                        for (int i = 0; i < category.size; i++)
+                        foreach (var chunk in category.chunks)
                         {
-                            file[i + category.offset] = category.data[i];
+                            byte[] data = categoryFile.ToList().GetRange(chunk.offset, chunk.size).ToArray();
+
+                            for (int i = 0; i < chunk.size; i++)
+                            {
+                                file[i + chunk.offset] = data[i];
+                            }
                         }
                         Debugging.WriteToLog($"Successfully merged bytes from {category.id} RFL");
                     }
@@ -461,7 +544,7 @@ ConfigSchemaFile=""""";
 
                 storedData.categorySelection.Clear();
                 
-                foreach (var category in categories)
+                foreach (var category in mergeCategories)
                 {
                     Mod mod = (category.comboBox.SelectedItem as Mod);
 
@@ -519,9 +602,9 @@ ConfigSchemaFile=""""";
                         
                         MergeButton.IsEnabled = true;
 
-                        if (!Directory.Exists(Preferences.appdata))
+                        if (!Directory.Exists(Preferences.appData))
                         {
-                            Directory.CreateDirectory(Preferences.appdata);
+                            Directory.CreateDirectory(Preferences.appData);
                         }
 
                         SaveStoredData();
@@ -578,6 +661,13 @@ ConfigSchemaFile=""""";
             WindowPreferences preferenceWindow = new WindowPreferences();
             preferenceWindow.Owner = this;
             preferenceWindow.ShowDialog();
+        }
+
+        private void mnuCategories_Click(object sender, RoutedEventArgs e)
+        {
+            WindowCategories categoryWindow = new WindowCategories();
+            categoryWindow.Owner = this;
+            categoryWindow.ShowDialog();
         }
     }
 }

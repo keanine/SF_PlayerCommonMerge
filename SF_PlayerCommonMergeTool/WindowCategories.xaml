@@ -1,0 +1,20 @@
+﻿<Window x:Class="SF_PlayerCommonMergeTool.WindowCategories"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SF_PlayerCommonMergeTool"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
+        Title="Merge Tool Categories" Height="450" Width="800">
+    <Grid>
+        <ScrollViewer Margin="0,70,0,73">
+            <StackPanel x:Name="stackCategories"/>
+        </ScrollViewer>
+        <Button x:Name="btnApply" Content="Apply" Margin="0,0,10,10" HorizontalAlignment="Right" Width="76" Height="20" VerticalAlignment="Bottom" Click="btnApply_Click"/>
+        <Button x:Name="btnCancel" Content="Cancel" Margin="0,0,91,10" HorizontalAlignment="Right" Width="76" Height="20" VerticalAlignment="Bottom" Click="btnCancel_Click"/>
+        <Button x:Name="btnDownload" Content="Download More" Margin="10,0,0,10" Height="20" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="106" Click="btnDownload_Click"/>
+        <Button x:Name="btnOpenFolder" Content="Open Folder" Margin="121,0,0,10" Height="20" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="106" Click="btnOpenFolder_Click"/>
+
+    </Grid>
+</Window>

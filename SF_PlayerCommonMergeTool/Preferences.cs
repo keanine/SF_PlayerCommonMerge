@@ -14,7 +14,7 @@ namespace SF_PlayerCommonMergeTool
     {
         private static Preferences instance { get; set; }
 
-        public static string appdata = string.Empty;
+        public static string appData = string.Empty;
 
         public bool logDebugInformation { get; set; }
         public static bool LogDebugInformation { get { return instance.logDebugInformation; } set { instance.logDebugInformation = value; } }
@@ -28,7 +28,7 @@ namespace SF_PlayerCommonMergeTool
         public static void Initialize()
         {
             //Load from JSON and create instance
-            string path = Path.Combine(appdata, "preferences.json");
+            string path = Path.Combine(appData, "preferences.json");
 
             if (File.Exists(path))
             {
@@ -47,7 +47,7 @@ namespace SF_PlayerCommonMergeTool
         public static void Save()
         {
             string json = JsonSerializer.Serialize(instance, new JsonSerializerOptions { WriteIndented = true });
-            string path = Path.Combine(appdata, "preferences.json");
+            string path = Path.Combine(appData, "preferences.json");
             File.WriteAllText(path, json);
         }
     }
