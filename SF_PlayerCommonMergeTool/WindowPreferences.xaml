@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:SF_PlayerCommonMergeTool"
         xmlns:System="clr-namespace:System;assembly=System.Runtime" x:Class="SF_PlayerCommonMergeTool.WindowPreferences"
         mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
         Title="Merge Tool Preferences" Height="300" Width="400">
     <Grid>
         <CheckBox x:Name="chkLogDebugInfo" Content="Log debug information" HorizontalAlignment="Left" Margin="10,102,0,0" VerticalAlignment="Top" />

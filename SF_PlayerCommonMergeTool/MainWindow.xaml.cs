@@ -31,7 +31,7 @@ namespace SF_PlayerCommonMergeTool
         private static string applicationName = "PlayerCommonMergeTool";
         private static string updateServerURL = @"https://raw.githubusercontent.com/keanine/SF_PlayerCommonMerge/main/UpdateServer/";
         private static string internalUpdateServerURL = @"https://raw.githubusercontent.com/keanine/SF_PlayerCommonMerge/main/InternalUpdateServer/";
-        private static string devUpdateServerURL = @"https://raw.githubusercontent.com/keanine/SF_PlayerCommonMerge/main/DevUpdateServer/";
+        private static string devUpdateServerURL = @"https://raw.githubusercontent.com/keanine/SF_PlayerCommonMerge/development/DevUpdateServer/";
         private static string versionFileName = "version.ini";
         private static string updateListFileName = "updatelist.txt";
         private static string executableFileName = "SF_PlayerCommonMergeTool.exe";
@@ -53,6 +53,12 @@ namespace SF_PlayerCommonMergeTool
             //"playercommon_PC_u2.pac",
             //"u0.pos",
             //"u2_u0.pos"
+        };
+
+        private string[] requiredTools =
+        {
+            "HedgeArcPack.exe",
+            "PlayerCommonUpdaterV2.exe"
         };
 
         public string iniTemplate =
@@ -79,8 +85,28 @@ ConfigSchemaFile=""""";
         {
             InitializeComponent();
 
+
             Preferences.appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\SonicFrontiersModding\\SF_PlayerCommonMerge\\";
             Preferences.Initialize();
+
+            if (Directory.Exists("tools"))
+            {
+                foreach (var tool in requiredTools)
+                {
+                    if (!File.Exists(Path.Combine("tools/", tool)))
+                    {
+                        MessageBox.Show($"Could not find {tool} in the local tools folder");
+                        Close();
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show($"Could not find the local tools folder. This is required for operation of the Merge Tool");
+            }
+
+
+            Debugging.WriteToLog($"\n=== Launched Merge Tool [{DateTime.Now.ToString()}] ===");
 
             if (Preferences.AllowCheckingForUpdates)
             {
@@ -227,6 +253,8 @@ ConfigSchemaFile=""""";
                 categories.Add(new Category("Spin Dash (Cyber 3D)", "spinboostcy3d", 0x8C40, 0xF8, CategoryStackPanel));
                 categories.Add(new Category("Spin Dash (Cyber 2D)", "spinboostcy2d", 0x9880, 0xF8, CategoryStackPanel));
 
+                Debugging.WriteToLog("Loaded categories");
+
                 string[] folders = Directory.GetDirectories(modsFolder);
 
                 foreach (var folder in folders)
@@ -287,7 +315,9 @@ ConfigSchemaFile=""""";
                 {
                     storedData.categorySelection.Clear();
                     SaveStoredData();
+                    Debugging.WriteToLog("No mods folder found");
                 }
+                Debugging.WriteToLog("Finished Loading");
             }
         }
 
@@ -331,6 +361,7 @@ ConfigSchemaFile=""""";
 
         private void UpdatePac(string modPac, string destination)
         {
+            Debugging.WriteToLog("Running UpdatePac on: " + destination);
             File.Copy(modPac, destination, true);
 
             CleanUpPlayerCommonUpdater();
@@ -346,6 +377,8 @@ ConfigSchemaFile=""""";
         {
             if (storedData.installLocation != string.Empty)
             {
+                Debugging.WriteToLog("Running Merge");
+
                 string modFolder = modsFolder + "MergedPlayerCommon";
                 string newPacFolder = modFolder + "\\raw\\character\\";
 
@@ -359,8 +392,10 @@ ConfigSchemaFile=""""";
                     Directory.CreateDirectory(workspace);
                 }
 
+                Debugging.WriteToLog($"Copying vanilla file");
                 File.Copy(storedData.installLocation + "\\image\\x64\\raw\\character\\playercommon.pac", workspace + "playercommon_vanilla.pac", true);
 
+                Debugging.WriteToLog($"Extracting: \"{workspace}playercommon_vanilla.pac\" to \"{workspace}out_vanilla\"");
                 RunCMD("tools/HedgeArcPack.exe", $"\"{workspace}playercommon_vanilla.pac\"", $"\"{workspace}out_vanilla\"", "-E", "-T=rangers");
 
                 foreach (var category in categories)
@@ -373,24 +408,30 @@ ConfigSchemaFile=""""";
                         // Update the pac file
                         UpdatePac(mod.path + "\\raw\\character\\playercommon.pac", copyOfPac);
 
+                        Debugging.WriteToLog($"Extracting: \"{copyOfPac}\" to \"{workspace}out_{category.id}\"");
                         RunCMD("tools/HedgeArcPack.exe", $"\"{copyOfPac}\"", $"\"{workspace}out_{category.id}\"", "-E", "-T=rangers");
 
                     }
                     else if (category.comboBox.SelectedIndex == 0)
                     {
+                        Debugging.WriteToLog($"Extracting: \"{workspace}playercommon_vanilla.pac\" to \"{workspace}out_{category.id}\"");
                         RunCMD("tools/HedgeArcPack.exe", $"\"{workspace}playercommon_vanilla.pac\"", $"\"{workspace}out_{category.id}\"", "-E", "-T=rangers");
                     }
                 }
+                Debugging.WriteToLog($"Extracted all category files");
 
                 CleanUpPlayerCommonUpdater();
 
+                Debugging.WriteToLog($"Read vanilla RFL");
                 string rfl = $"{workspace}\\out_vanilla\\player_common.rfl";
                 byte[] file = File.ReadAllBytes(rfl);
+                Debugging.WriteToLog($"Read vanilla RFL successfully");
 
                 foreach (var category in categories)
                 {
-                    if (category.HasOffset && category.comboBox.SelectedIndex > 0)
+                    if (category.HasOffset && category.comboBox.SelectedIndex >= 0)
                     {
+                        Debugging.WriteToLog($"Merging bytes from {category.id} RFL");
                         byte[] categoryFile = File.ReadAllBytes($"{workspace}\\out_{category.id}\\player_common.rfl");
                         category.data = categoryFile.ToList().GetRange(category.offset, category.size).ToArray();
 
@@ -398,18 +439,24 @@ ConfigSchemaFile=""""";
                         {
                             file[i + category.offset] = category.data[i];
                         }
+                        Debugging.WriteToLog($"Successfully merged bytes from {category.id} RFL");
                     }
                 }
 
+                Debugging.WriteToLog($"Writing all merged bytes to output RFL");
                 File.WriteAllBytes(rfl, file);
 
+                Debugging.WriteToLog($"Packing merged RFL");
                 RunCMD("tools/HedgeArcPack.exe", $"\"{workspace}out_vanilla\"", $"\"{workspace}out_vanilla.pac\"", "-P", "-T=rangers");
+                Debugging.WriteToLog($"Successfully packed RFL");
 
                 File.Move($"{workspace}\\out_vanilla.pac", newPacFolder + "playercommon.pac", true);
                 File.WriteAllText(modFolder + "\\mod.ini", iniTemplate);
+                Debugging.WriteToLog($"Created merged mod");
 
                 ClearDirectory(new DirectoryInfo(workspace));
                 Directory.Delete(workspace);
+                Debugging.WriteToLog($"Workspace cleaned up");
 
 
                 storedData.categorySelection.Clear();
@@ -425,6 +472,7 @@ ConfigSchemaFile=""""";
                 }
                 SaveStoredData();
 
+                Debugging.WriteToLog($"Merge Successful!");
                 MessageBox.Show("You can now close this tool, open Hedge Mod Manager and enable the new mod MergedPlayerCommon", "Merge complete!");
             }
         }
@@ -528,6 +576,7 @@ ConfigSchemaFile=""""";
         private void mnuPreferences_Click(object sender, RoutedEventArgs e)
         {
             WindowPreferences preferenceWindow = new WindowPreferences();
+            preferenceWindow.Owner = this;
             preferenceWindow.ShowDialog();
         }
     }

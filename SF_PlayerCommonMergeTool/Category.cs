@@ -9,6 +9,7 @@ using System.Windows.Controls;
 namespace SF_PlayerCommonMergeTool
 {
 
+    [System.Serializable]
     public class Category
     {
         public string name;
@@ -23,6 +24,7 @@ namespace SF_PlayerCommonMergeTool
         public Category(string name, string id, StackPanel parent, out ComboBox comboBox)
         {
             this.name = name;
+            this.id = id;
             comboBox = InitComboBox(parent);
             this.comboBox = comboBox;
         }
