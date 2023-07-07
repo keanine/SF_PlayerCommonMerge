@@ -13,7 +13,7 @@
             </MenuItem>
             <MenuItem Header="_Settings">
                 <MenuItem Header="_Categories" />
-                <MenuItem Header="_Preferences" />
+                <MenuItem x:Name="mnuPreferences" Header="_Preferences" Click="mnuPreferences_Click"/>
             </MenuItem>
             <MenuItem Header="_Help">
                 <MenuItem Header="_About" />

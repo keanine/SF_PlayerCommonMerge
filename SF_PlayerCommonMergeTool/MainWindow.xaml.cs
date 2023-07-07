@@ -41,8 +41,6 @@ namespace SF_PlayerCommonMergeTool
         public List<Mod> mods = new List<Mod>();
 
         public string workspace = "MergeTemp\\";
-
-        string appdata = string.Empty;
         string modsFolder = string.Empty;
 
         public StoredData storedData = new StoredData();
@@ -81,14 +79,16 @@ ConfigSchemaFile=""""";
         {
             InitializeComponent();
 
+            Preferences.appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\SonicFrontiersModding\\SF_PlayerCommonMerge\\";
+            Preferences.Initialize();
+
             if (!File.Exists("noupdate.txt"))
             {
                 Thread updateThread = new Thread(CheckForUpdates);
                 updateThread.Start();
             }
 
-            appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\SonicFrontiersModding\\SF_PlayerCommonMerge\\";
-            if (File.Exists(appdata + "\\storedData.json"))
+            if (File.Exists(Preferences.appdata + "\\storedData.json"))
             {
                 LoadStoredData();
                 GameFolderTextbox.Text = storedData.installLocation;
@@ -149,14 +149,14 @@ ConfigSchemaFile=""""";
 
         public void LoadStoredData()
         {
-            string json = File.ReadAllText(appdata + "storedData.json");
+            string json = File.ReadAllText(Preferences.appdata + "storedData.json");
             storedData = (StoredData)JsonSerializer.Deserialize(json, typeof(StoredData));
         }
 
         public void SaveStoredData()
         {
             string json = JsonSerializer.Serialize(storedData);
-            File.WriteAllText(appdata + "storedData.json", json);
+            File.WriteAllText(Preferences.appdata + "storedData.json", json);
         }
 
         private void LoadButton_Click(object sender, RoutedEventArgs e)
@@ -456,9 +456,9 @@ ConfigSchemaFile=""""";
                         
                         MergeButton.IsEnabled = true;
 
-                        if (!Directory.Exists(appdata))
+                        if (!Directory.Exists(Preferences.appdata))
                         {
-                            Directory.CreateDirectory(appdata);
+                            Directory.CreateDirectory(Preferences.appdata);
                         }
 
                         SaveStoredData();
@@ -508,6 +508,12 @@ ConfigSchemaFile=""""";
             {
                 throw new Exception(errors);
             }
+        }
+
+        private void mnuPreferences_Click(object sender, RoutedEventArgs e)
+        {
+            WindowPreferences preferenceWindow = new WindowPreferences();
+            preferenceWindow.ShowDialog();
         }
     }
 }
