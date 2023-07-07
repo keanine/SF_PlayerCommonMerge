@@ -19,12 +19,18 @@ namespace SF_PlayerCommonMergeTool
         public bool logDebugInformation { get; set; }
         public static bool LogDebugInformation { get { return instance.logDebugInformation; } set { instance.logDebugInformation = value; } }
 
+        public bool allowCheckingForUpdates { get; set; }
+        public static bool AllowCheckingForUpdates { get { return instance.allowCheckingForUpdates; } set { instance.allowCheckingForUpdates = value; } }
+
+        public string updateBranch { get; set; }
+        public static string UpdateBranch { get { return instance.updateBranch; } set { instance.updateBranch = value; } }
+
         public static void Initialize()
         {
             //Load from JSON and create instance
             string path = Path.Combine(appdata, "preferences.json");
 
-            if ( File.Exists(path))
+            if (File.Exists(path))
             {
                 string json = File.ReadAllText(path);
                 instance = (Preferences)JsonSerializer.Deserialize(json, typeof(Preferences));
@@ -32,6 +38,9 @@ namespace SF_PlayerCommonMergeTool
             else
             {
                 instance = new Preferences();
+                LogDebugInformation = false;
+                AllowCheckingForUpdates = true;
+                UpdateBranch = "Main";
             }
         }
 

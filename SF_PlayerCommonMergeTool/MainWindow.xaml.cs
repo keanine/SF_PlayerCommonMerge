@@ -82,7 +82,7 @@ ConfigSchemaFile=""""";
             Preferences.appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\SonicFrontiersModding\\SF_PlayerCommonMerge\\";
             Preferences.Initialize();
 
-            if (!File.Exists("noupdate.txt"))
+            if (Preferences.AllowCheckingForUpdates)
             {
                 Thread updateThread = new Thread(CheckForUpdates);
                 updateThread.Start();
@@ -119,7 +119,22 @@ ConfigSchemaFile=""""";
             Thread.Sleep(2000);
             try
             {
-                if (AutoUpdaterLib.Updater.CheckForUpdates(applicationName, updateServerURL, versionFileName))
+                string selectedUpdateServerURL = string.Empty;
+                switch (Preferences.UpdateBranch)
+                {
+                    case "Main":
+                        selectedUpdateServerURL = updateServerURL;
+                        break;
+                    case "Development":
+                        selectedUpdateServerURL = devUpdateServerURL;
+                        break;
+                    default:
+                        selectedUpdateServerURL = updateServerURL;
+                        break;
+                }
+                
+
+                if (AutoUpdaterLib.Updater.CheckForUpdates(applicationName, selectedUpdateServerURL, versionFileName))
                 {
                     MessageBoxResult result = System.Windows.MessageBox.Show("A new update has been found. Do you want to update?", "Update Found", MessageBoxButton.YesNo, MessageBoxImage.Information);
 
@@ -129,7 +144,7 @@ ConfigSchemaFile=""""";
                         proc1.UseShellExecute = true;
                         proc1.CreateNoWindow = false;
                         proc1.WorkingDirectory = @"";
-                        proc1.Arguments = $"\"autoupdater.dll\" \"{applicationName}\" \"{updateServerURL}\" \"{versionFileName}\" \"{updateListFileName}\" \"{executableFileName}\"";
+                        proc1.Arguments = $"\"autoupdater.dll\" \"{applicationName}\" \"{selectedUpdateServerURL}\" \"{versionFileName}\" \"{updateListFileName}\" \"{executableFileName}\"";
                         proc1.FileName = "dotnet.exe";
                         Process.Start(proc1);
 

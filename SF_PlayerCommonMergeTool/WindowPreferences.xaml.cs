@@ -24,11 +24,15 @@ namespace SF_PlayerCommonMergeTool
             InitializeComponent();
 
             chkLogDebugInfo.IsChecked = Preferences.LogDebugInformation;
+            chkCheckForUpdates.IsChecked = Preferences.AllowCheckingForUpdates;
+            cmbUpdateBranch.SelectedValue = Preferences.UpdateBranch;
         }
 
         private void btnApply_Click(object sender, RoutedEventArgs e)
         {
             Preferences.LogDebugInformation = (bool)chkLogDebugInfo.IsChecked;
+            Preferences.AllowCheckingForUpdates = (bool) chkCheckForUpdates.IsChecked;
+            Preferences.UpdateBranch = cmbUpdateBranch.SelectedValue.ToString();
 
             Preferences.Save();
             this.Close();
