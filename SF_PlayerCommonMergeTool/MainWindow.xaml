@@ -5,14 +5,36 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SF_PlayerCommonMergeTool"
         mc:Ignorable="d"
-        Title="PlayerCommon Merge Tool v1.4" Height="410" Width="540" ResizeMode="CanResize" MinWidth="540" MaxWidth="540" MinHeight="150">
+        Title="PlayerCommon Merge Tool v1.5" ResizeMode="CanResize" Width="540" MinWidth="540" MaxWidth="540" Height="460" MinHeight="150">
     <Grid>
-        <TextBox x:Name="GameFolderTextbox" Margin="10,10,92,0" TextWrapping="NoWrap" Text="" VerticalAlignment="Top" IsReadOnly="True"/>
-        <Button x:Name="MergeButton" Content="Merge" Margin="10,0,10,10" Click="MergeButton_Click" Height="20" VerticalAlignment="Bottom"/>
-        <ScrollViewer Margin="10,51,10,35" VerticalScrollBarVisibility="Auto">
-            <StackPanel x:Name="CategoryStackPanel"/>
-        </ScrollViewer>
-        <Button x:Name="BrowseButton" Content="Browse" Margin="0,9,10,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="77" Click="BrowseButton_Click"/>
+        <Menu DockPanel.Dock="Top" Height="20" VerticalAlignment="Top">
+            <MenuItem Header="_File">
+                <MenuItem x:Name="mnuExit" Header="_Exit" Click="mnuExit_Click" />
+            </MenuItem>
+            <MenuItem Header="_Settings">
+                <!--<MenuItem x:Name="mnuCategories" Header="_Categories" Click="mnuCategories_Click"/>-->
+                <MenuItem x:Name="mnuPreferences" Header="_Preferences" Click="mnuPreferences_Click"/>
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem x:Name="mnuAbout" Header="_About" Click="mnuAbout_Click" />
+                <MenuItem x:Name="mnuCheckForUpdates" Header="_Check for Updates" Click="mnuCheckForUpdates_Click" />
+                <MenuItem x:Name="mnuContact" Header="Contact" Click="mnuContact_Click" />
+            </MenuItem>
+        </Menu>
+        <TextBox x:Name="GameFolderTextbox" Margin="10,25,92,0" TextWrapping="NoWrap" Text="" VerticalAlignment="Top" IsReadOnly="True" Height="20"/>
+
+        <Button x:Name="BrowseButton" Content="Browse" Margin="0,25,10,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="77" Click="BrowseButton_Click"/>
+        <TabControl Margin="0,60,0,0" BorderThickness="0 1 0 0">
+            <TabItem Header="Sonic">
+                <Grid>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,10,0,40">
+                    <StackPanel x:Name="CategoryStackPanel"/>
+                    </ScrollViewer>
+                    <Button x:Name="MergeButton" Content="Merge" Margin="10,0,10,10" Click="MergeButton_Click" Height="20" VerticalAlignment="Bottom"/>
+                </Grid>
+
+            </TabItem>
+        </TabControl>
 
     </Grid>
 </Window>

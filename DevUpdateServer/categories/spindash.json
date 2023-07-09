@@ -1,0 +1,19 @@
+{
+  "name": "Spin Dash",
+  "id": "spindash",
+  "chunks": [
+    {
+      "offset": 32336,
+      "size": 248
+    },
+    {
+      "offset": 35904,
+      "size": 248
+    },
+    {
+      "offset": 39040,
+      "size": 248
+    }
+  ],
+  "order": 7
+}

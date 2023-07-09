@@ -2,40 +2,76 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
 namespace SF_PlayerCommonMergeTool
 {
+    [System.Serializable]
+    public class CategoryChunk
+    {
+        [JsonInclude] public int offset;
+        [JsonInclude] public int size;
 
+        public CategoryChunk(int offset, int size) 
+        { 
+            this.offset = offset;
+            this.size = size;
+        }
+    }
+
+    [System.Serializable]
     public class Category
     {
-        public string name;
-        public string id;
-        public int offset;
-        public int size;
+        [JsonInclude] public string name;
+        [JsonInclude] public string id;
+        [JsonInclude] public CategoryChunk[] chunks;
+        [JsonInclude] public int order;
         public ComboBox comboBox;
-        public byte[] data;
 
-        public bool HasOffset { get; private set; }
+        [JsonIgnore] public bool HasOffset { get; private set; }
+
+        public Category()
+        {
+
+        }
 
         public Category(string name, string id, StackPanel parent, out ComboBox comboBox)
         {
             this.name = name;
+            this.id = id;
             comboBox = InitComboBox(parent);
             this.comboBox = comboBox;
+            this.order = 0;
         }
 
-        public Category(string name, string id, int offset, int size, StackPanel parent)
+        public Category(string name, string id, int offset, int size, int order, StackPanel parent)
         {
             this.name = name;
-            this.offset = offset;
-            this.size = size;
             this.id = id;
+            this.order = order;
             HasOffset = true;
 
+            chunks = new CategoryChunk[1];
+            chunks[0] = new CategoryChunk(offset, size);
+
             comboBox = InitComboBox(parent);
+        }
+
+        public Category(string name, string id, int order, StackPanel? parent, params CategoryChunk[] chunks)
+        {
+            this.name = name;
+            this.id = id;
+            this.order = order;
+            HasOffset = true;
+            this.chunks = chunks;
+
+            if (parent != null)
+            {
+                comboBox = InitComboBox(parent);
+            }
         }
 
         public ComboBox InitComboBox(StackPanel parent)
@@ -55,7 +91,7 @@ namespace SF_PlayerCommonMergeTool
             comboBox = new ComboBox();
             comboBox.Width = 320;
             comboBox.Height = 22;
-            comboBox.Items.Add("Unmodded");
+            comboBox.Items.Add("Vanilla");
             comboBox.SelectedIndex = 0;
 
             panel.Children.Add(label);

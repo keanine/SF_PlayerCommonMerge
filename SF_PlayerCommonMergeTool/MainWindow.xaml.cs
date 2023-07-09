@@ -2,24 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Text.Json;
-using ComboBox = System.Windows.Controls.ComboBox;
-using Microsoft.Win32;
-using Path = System.IO.Path;
 using System.Diagnostics;
-using System.Reflection;
+
+using ComboBox = System.Windows.Controls.ComboBox;
+using Path = System.IO.Path;
 
 namespace SF_PlayerCommonMergeTool
 {
@@ -31,18 +21,17 @@ namespace SF_PlayerCommonMergeTool
         private static string applicationName = "PlayerCommonMergeTool";
         private static string updateServerURL = @"https://raw.githubusercontent.com/keanine/SF_PlayerCommonMerge/main/UpdateServer/";
         private static string internalUpdateServerURL = @"https://raw.githubusercontent.com/keanine/SF_PlayerCommonMerge/main/InternalUpdateServer/";
-        private static string devUpdateServerURL = @"https://raw.githubusercontent.com/keanine/SF_PlayerCommonMerge/main/DevUpdateServer/";
+        private static string devUpdateServerURL = @"https://raw.githubusercontent.com/keanine/SF_PlayerCommonMerge/development/DevUpdateServer/";
         private static string versionFileName = "version.ini";
         private static string updateListFileName = "updatelist.txt";
         private static string executableFileName = "SF_PlayerCommonMergeTool.exe";
 
         public ComboBox SetAllComboBox;
         public List<Category> categories = new List<Category>();
+        public List<Category> addonCategories = new List<Category>();
         public List<Mod> mods = new List<Mod>();
 
         public string workspace = "MergeTemp\\";
-
-        string appdata = string.Empty;
         string modsFolder = string.Empty;
 
         public StoredData storedData = new StoredData();
@@ -55,6 +44,12 @@ namespace SF_PlayerCommonMergeTool
             //"playercommon_PC_u2.pac",
             //"u0.pos",
             //"u2_u0.pos"
+        };
+
+        private string[] requiredTools =
+        {
+            "HedgeArcPack.exe",
+            "PlayerCommonUpdaterV2.exe"
         };
 
         public string iniTemplate =
@@ -81,14 +76,36 @@ ConfigSchemaFile=""""";
         {
             InitializeComponent();
 
-            if (!File.Exists("noupdate.txt"))
+
+            Preferences.appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\SonicFrontiersModding\\SF_PlayerCommonMerge\\";
+            Preferences.Initialize();
+
+            if (Directory.Exists("tools"))
             {
-                Thread updateThread = new Thread(CheckForUpdates);
+                foreach (var tool in requiredTools)
+                {
+                    if (!File.Exists(Path.Combine("tools/", tool)))
+                    {
+                        MessageBox.Show($"Could not find {tool} in the local tools folder");
+                        Close();
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show($"Could not find the local tools folder. This is required for operation of the Merge Tool");
+            }
+
+
+            Debugging.WriteToLog($"\n=== Launched Merge Tool [{DateTime.Now.ToString()}] ===");
+
+            if (Preferences.AllowCheckingForUpdates)
+            {
+                Thread updateThread = new Thread(() => CheckForUpdates(true));
                 updateThread.Start();
             }
 
-            appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\SonicFrontiersModding\\SF_PlayerCommonMerge\\";
-            if (File.Exists(appdata + "\\storedData.json"))
+            if (File.Exists(Preferences.appData + "\\storedData.json"))
             {
                 LoadStoredData();
                 GameFolderTextbox.Text = storedData.installLocation;
@@ -114,14 +131,33 @@ ConfigSchemaFile=""""";
             Window.GetWindow(this).Title += message;
         }
 
-        private void CheckForUpdates()
+        private void CheckForUpdates(bool wait)
         {
-            Thread.Sleep(2000);
+            if (wait)
+            {
+                Thread.Sleep(2000);
+            }
+            
             try
             {
-                if (AutoUpdaterLib.Updater.CheckForUpdates(applicationName, updateServerURL, versionFileName))
+                string selectedUpdateServerURL = string.Empty;
+                switch (Preferences.UpdateBranch)
                 {
-                    MessageBoxResult result = System.Windows.MessageBox.Show("A new update has been found. Do you want to update?", "Update Found", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                    case "Main":
+                        selectedUpdateServerURL = updateServerURL;
+                        break;
+                    case "Development":
+                        selectedUpdateServerURL = devUpdateServerURL;
+                        break;
+                    default:
+                        selectedUpdateServerURL = updateServerURL;
+                        break;
+                }
+                
+
+                if (AutoUpdaterLib.Updater.CheckForUpdates(applicationName, selectedUpdateServerURL, versionFileName))
+                {
+                    MessageBoxResult result = MessageBox.Show("A new update has been found. Do you want to update?", "Update Found", MessageBoxButton.YesNo, MessageBoxImage.Information);
 
                     if (result == MessageBoxResult.Yes)
                     {
@@ -129,11 +165,11 @@ ConfigSchemaFile=""""";
                         proc1.UseShellExecute = true;
                         proc1.CreateNoWindow = false;
                         proc1.WorkingDirectory = @"";
-                        proc1.Arguments = $"\"autoupdater.dll\" \"{applicationName}\" \"{updateServerURL}\" \"{versionFileName}\" \"{updateListFileName}\" \"{executableFileName}\"";
+                        proc1.Arguments = $"\"autoupdater.dll\" \"{applicationName}\" \"{selectedUpdateServerURL}\" \"{versionFileName}\" \"{updateListFileName}\" \"{executableFileName}\"";
                         proc1.FileName = "dotnet.exe";
                         Process.Start(proc1);
 
-                        System.Environment.Exit(1);
+                        Environment.Exit(1);
                     }
                 }
                 else
@@ -149,14 +185,14 @@ ConfigSchemaFile=""""";
 
         public void LoadStoredData()
         {
-            string json = File.ReadAllText(appdata + "storedData.json");
+            string json = File.ReadAllText(Preferences.appData + "storedData.json");
             storedData = (StoredData)JsonSerializer.Deserialize(json, typeof(StoredData));
         }
 
         public void SaveStoredData()
         {
             string json = JsonSerializer.Serialize(storedData);
-            File.WriteAllText(appdata + "storedData.json", json);
+            File.WriteAllText(Preferences.appData + "storedData.json", json);
         }
 
         private void LoadButton_Click(object sender, RoutedEventArgs e)
@@ -183,6 +219,7 @@ ConfigSchemaFile=""""";
             {
                 CategoryStackPanel.Children.Clear();
                 categories.Clear();
+                addonCategories.Clear();
                 mods.Clear();
 
                 categories.Add(new Category("Set All", "set_all", CategoryStackPanel, out SetAllComboBox));
@@ -201,16 +238,26 @@ ConfigSchemaFile=""""";
                 //categories.Add(new Category("Cyloop", "cyloop", 0x5250, 0x1440, CategoryStackPanel));
 
                 // Game Update v1.3
-                categories.Add(new Category("Open Zone Physics", "openzone", 0x73B0, 0xDE8, CategoryStackPanel)); //Includes water physics
-                categories.Add(new Category("Cyberspace 3D Physics", "cyber3d", 0x81A0, 0xC40, CategoryStackPanel));
-                categories.Add(new Category("Cyberspace 2D Physics", "cyber2d", 0x8DE0, 0xC40, CategoryStackPanel));
-                categories.Add(new Category("Combat & Misc", "gameplay", 0x40, 0x7370, CategoryStackPanel));
-                categories.Add(new Category("Parry", "parry", 0x7B54, 0x24, CategoryStackPanel));
-                categories.Add(new Category("Cyloop", "cyloop", 0x5410, 0x1440, CategoryStackPanel));
+                categories.Add(new Category("Open Zone Physics", "openzone", 0x73B0, 0xDE8, 1, CategoryStackPanel)); //Includes water physics
+                categories.Add(new Category("Cyberspace 3D Physics", "cyber3d", 0x81A0, 0xC40, 2, CategoryStackPanel));
+                categories.Add(new Category("Cyberspace 2D Physics", "cyber2d", 0x8DE0, 0xC40, 3, CategoryStackPanel));
+                categories.Add(new Category("Combat & Misc", "gameplay", 0x40, 0x7370, 4, CategoryStackPanel));
+                categories.Add(new Category("Cyloop", "cyloop", 0x5410, 0x1440, 5, CategoryStackPanel));
 
-                categories.Add(new Category("Spin Dash", "spinboost", 0x7E50, 0xF8, CategoryStackPanel));
-                categories.Add(new Category("Spin Dash (Cyber 3D)", "spinboostcy3d", 0x8C40, 0xF8, CategoryStackPanel));
-                categories.Add(new Category("Spin Dash (Cyber 2D)", "spinboostcy2d", 0x9880, 0xF8, CategoryStackPanel));
+
+                Category categoryParry = new Category("Parry", "parry", 6, null, new CategoryChunk(0x7B54, 0x24));
+                Category categorySpinDash = new Category("Spin Dash", "spindash", 7, null,
+                    new CategoryChunk(0x7E50, 0xF8),
+                    new CategoryChunk(0x8C40, 0xF8),
+                    new CategoryChunk(0x9880, 0xF8));
+                SerializeCategory(categoryParry);
+                SerializeCategory(categorySpinDash);
+
+                Debugging.WriteToLog("Temporarily loading all addon categories as the system has not been fully implemented");
+                LoadAllCategoriesFromDirectory();
+                Debugging.WriteToLog("Loaded categories");
+
+                //SerializeCategories();
 
                 string[] folders = Directory.GetDirectories(modsFolder);
 
@@ -272,8 +319,50 @@ ConfigSchemaFile=""""";
                 {
                     storedData.categorySelection.Clear();
                     SaveStoredData();
+                    Debugging.WriteToLog("No mods folder found");
+                }
+                Debugging.WriteToLog("Finished Loading");
+            }
+        }
+
+        private void SerializeCategories()
+        {
+            foreach (var category in categories)
+            {
+                SerializeCategory(category);
+            }
+        }
+        private void SerializeCategory(Category category)
+        {
+            string directory = Path.Combine(Preferences.appData, "categories");
+            string filePath = Path.Combine(directory, $"{category.id}.json");
+            Directory.CreateDirectory(directory);
+
+            if (!File.Exists(filePath))
+            {
+                if (category.HasOffset)
+                {
+                    string jsonCategory = JsonSerializer.Serialize(category, new JsonSerializerOptions() { WriteIndented = true });
+                    File.WriteAllText(filePath, jsonCategory);
                 }
             }
+        }
+
+        private void LoadAllCategoriesFromDirectory()
+        {
+            addonCategories.Clear();
+            string directory = Path.Combine(Preferences.appData, "categories");
+            foreach (var file in Directory.GetFiles(directory))
+            {
+                LoadCategoryFromFile(file);
+            }
+        }
+        private void LoadCategoryFromFile(string fileName)
+        {
+            string jsonCategory = File.ReadAllText(fileName);
+            Category category = (Category)JsonSerializer.Deserialize(jsonCategory, typeof(Category));
+            category = new Category(category.name, category.id, category.order, CategoryStackPanel, category.chunks);
+            addonCategories.Add(category);
         }
 
         public void LoadComboBox(ComboBox comboBox, string[] modFolders)
@@ -288,15 +377,23 @@ ConfigSchemaFile=""""";
 
         private void AddToComboBox(object value)
         {
-            foreach (var cateogry in categories)
+            foreach (var category in categories)
             {
-                cateogry.comboBox.Items.Add(value);
+                category.comboBox.Items.Add(value);
+            }
+            foreach (var category in addonCategories)
+            {
+                category.comboBox.Items.Add(value);
             }
         }
 
         private void SetAllComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             foreach (var cateogry in categories)
+            {
+                cateogry.comboBox.SelectedIndex = (sender as ComboBox).SelectedIndex;
+            }
+            foreach (var cateogry in addonCategories)
             {
                 cateogry.comboBox.SelectedIndex = (sender as ComboBox).SelectedIndex;
             }
@@ -316,6 +413,7 @@ ConfigSchemaFile=""""";
 
         private void UpdatePac(string modPac, string destination)
         {
+            Debugging.WriteToLog("Running UpdatePac on: " + destination);
             File.Copy(modPac, destination, true);
 
             CleanUpPlayerCommonUpdater();
@@ -331,6 +429,11 @@ ConfigSchemaFile=""""";
         {
             if (storedData.installLocation != string.Empty)
             {
+                List<Category> mergeCategories = new List<Category>(categories);
+                mergeCategories.AddRange(addonCategories);
+
+                Debugging.WriteToLog("Running Merge");
+
                 string modFolder = modsFolder + "MergedPlayerCommon";
                 string newPacFolder = modFolder + "\\raw\\character\\";
 
@@ -344,12 +447,27 @@ ConfigSchemaFile=""""";
                     Directory.CreateDirectory(workspace);
                 }
 
+                Debugging.WriteToLog($"Copying vanilla file");
+
+                using (var md5 = System.Security.Cryptography.MD5.Create())
+                {
+                    using (var stream = File.OpenRead(storedData.installLocation + "\\image\\x64\\raw\\character\\playercommon.pac"))
+                    {
+                        var hash = md5.ComputeHash(stream);
+                        if (Preferences.PlayercommonHash != BitConverter.ToString(hash).Replace("-", string.Empty).ToLowerInvariant())
+                        {
+                            MessageBox.Show("The playercommon.pac in \"" + storedData.installLocation + "\\image\\x64\\raw\\character\\\"" + " is not for the correct version of Sonic Frontiers or has been modified. Please make sure your game is up to date with " + Preferences.NameOfGameUpdate + ". The merge operation has been cancelled.", "Error");
+                            return;
+                        }
+                    }
+                }
+
                 File.Copy(storedData.installLocation + "\\image\\x64\\raw\\character\\playercommon.pac", workspace + "playercommon_vanilla.pac", true);
 
-                //RunCMD("tools/HedgeArcPack.exe", $"\"{workspace}playercommon_vanilla.pac\" {workspace}out_vanilla -E -T=rangers");
+                Debugging.WriteToLog($"Extracting: \"{workspace}playercommon_vanilla.pac\" to \"{workspace}out_vanilla\"");
                 RunCMD("tools/HedgeArcPack.exe", $"\"{workspace}playercommon_vanilla.pac\"", $"\"{workspace}out_vanilla\"", "-E", "-T=rangers");
 
-                foreach (var category in categories)
+                foreach (var category in mergeCategories)
                 {
                     if (category.HasOffset && category.comboBox.SelectedIndex > 0)
                     {
@@ -359,50 +477,64 @@ ConfigSchemaFile=""""";
                         // Update the pac file
                         UpdatePac(mod.path + "\\raw\\character\\playercommon.pac", copyOfPac);
 
-                        //RunCMD("tools/HedgeArcPack.exe", $"\"{copyOfPac}\" {workspace}out_{category.id} -E -T=rangers");
+                        Debugging.WriteToLog($"Extracting: \"{copyOfPac}\" to \"{workspace}out_{category.id}\"");
                         RunCMD("tools/HedgeArcPack.exe", $"\"{copyOfPac}\"", $"\"{workspace}out_{category.id}\"", "-E", "-T=rangers");
 
                     }
                     else if (category.comboBox.SelectedIndex == 0)
                     {
+                        Debugging.WriteToLog($"Extracting: \"{workspace}playercommon_vanilla.pac\" to \"{workspace}out_{category.id}\"");
                         RunCMD("tools/HedgeArcPack.exe", $"\"{workspace}playercommon_vanilla.pac\"", $"\"{workspace}out_{category.id}\"", "-E", "-T=rangers");
                     }
                 }
+                Debugging.WriteToLog($"Extracted all category files");
 
                 CleanUpPlayerCommonUpdater();
 
+                Debugging.WriteToLog($"Read vanilla RFL");
                 string rfl = $"{workspace}\\out_vanilla\\player_common.rfl";
                 byte[] file = File.ReadAllBytes(rfl);
+                Debugging.WriteToLog($"Read vanilla RFL successfully");
 
-                foreach (var category in categories)
+                foreach (var category in mergeCategories)
                 {
-                    if (category.HasOffset && category.comboBox.SelectedIndex > 0)
+                    if (category.HasOffset && category.comboBox.SelectedIndex >= 0)
                     {
+                        Debugging.WriteToLog($"Merging bytes from {category.id} RFL");
                         byte[] categoryFile = File.ReadAllBytes($"{workspace}\\out_{category.id}\\player_common.rfl");
-                        category.data = categoryFile.ToList().GetRange(category.offset, category.size).ToArray();
 
-                        for (int i = 0; i < category.size; i++)
+                        foreach (var chunk in category.chunks)
                         {
-                            file[i + category.offset] = category.data[i];
+                            byte[] data = categoryFile.ToList().GetRange(chunk.offset, chunk.size).ToArray();
+
+                            for (int i = 0; i < chunk.size; i++)
+                            {
+                                file[i + chunk.offset] = data[i];
+                            }
                         }
+                        Debugging.WriteToLog($"Successfully merged bytes from {category.id} RFL");
                     }
                 }
 
+                Debugging.WriteToLog($"Writing all merged bytes to output RFL");
                 File.WriteAllBytes(rfl, file);
 
-                //RunCMD("tools/HedgeArcPack.exe", $"\"{workspace}out_vanilla\" {workspace}out_vanilla.pac -P -T=rangers");
+                Debugging.WriteToLog($"Packing merged RFL");
                 RunCMD("tools/HedgeArcPack.exe", $"\"{workspace}out_vanilla\"", $"\"{workspace}out_vanilla.pac\"", "-P", "-T=rangers");
+                Debugging.WriteToLog($"Successfully packed RFL");
 
                 File.Move($"{workspace}\\out_vanilla.pac", newPacFolder + "playercommon.pac", true);
                 File.WriteAllText(modFolder + "\\mod.ini", iniTemplate);
+                Debugging.WriteToLog($"Created merged mod");
 
                 ClearDirectory(new DirectoryInfo(workspace));
                 Directory.Delete(workspace);
+                Debugging.WriteToLog($"Workspace cleaned up");
 
 
                 storedData.categorySelection.Clear();
                 
-                foreach (var category in categories)
+                foreach (var category in mergeCategories)
                 {
                     Mod mod = (category.comboBox.SelectedItem as Mod);
 
@@ -413,6 +545,7 @@ ConfigSchemaFile=""""";
                 }
                 SaveStoredData();
 
+                Debugging.WriteToLog($"Merge Successful!");
                 MessageBox.Show("You can now close this tool, open Hedge Mod Manager and enable the new mod MergedPlayerCommon", "Merge complete!");
             }
         }
@@ -459,9 +592,9 @@ ConfigSchemaFile=""""";
                         
                         MergeButton.IsEnabled = true;
 
-                        if (!Directory.Exists(appdata))
+                        if (!Directory.Exists(Preferences.appData))
                         {
-                            Directory.CreateDirectory(appdata);
+                            Directory.CreateDirectory(Preferences.appData);
                         }
 
                         SaveStoredData();
@@ -511,6 +644,41 @@ ConfigSchemaFile=""""";
             {
                 throw new Exception(errors);
             }
+        }
+
+        private void mnuPreferences_Click(object sender, RoutedEventArgs e)
+        {
+            WindowPreferences preferenceWindow = new WindowPreferences();
+            preferenceWindow.Owner = this;
+            preferenceWindow.ShowDialog();
+        }
+
+        private void mnuCategories_Click(object sender, RoutedEventArgs e)
+        {
+            WindowCategories categoryWindow = new WindowCategories();
+            categoryWindow.Owner = this;
+            categoryWindow.ShowDialog();
+        }
+
+        private void mnuExit_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
+        private void mnuCheckForUpdates_Click(object sender, RoutedEventArgs e)
+        {
+            Thread updateThread = new Thread(() => CheckForUpdates(false));
+            updateThread.Start();
+        }
+
+        private void mnuContact_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Contact @keanine on Discord if you need help.", "Contact");
+        }
+
+        private void mnuAbout_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Merge Tool created by Keanine. HedgeArcPack created by Radfordhound. Update Tool created by Blurro", "About");
         }
     }
 }
