@@ -80,14 +80,24 @@ ConfigSchemaFile=""""";
             Preferences.appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\SonicFrontiersModding\\SF_PlayerCommonMerge\\";
             Preferences.Initialize();
 
+            this.Title = "PlayerCommon Merge Tool v" + Preferences.ToolVersion.ToString("0.0");
+
             if (Directory.Exists("tools"))
             {
                 foreach (var tool in requiredTools)
                 {
                     if (!File.Exists(Path.Combine("tools/", tool)))
                     {
-                        MessageBox.Show($"Could not find {tool} in the local tools folder");
-                        Close();
+                        if (tool == "PlayerCommonUpdaterV2.exe")
+                        {
+                            MessageBox.Show($"Could not find {tool} in the local tools folder. This could be because of a false-positive virus warning. Pac updating will be disabled until you restart the tool", "Warning");
+                            Preferences.AllowUpdatingPac = false;
+                        }
+                        else
+                        { 
+                            MessageBox.Show($"Could not find {tool} in the local tools folder", "Error");
+                            Close();
+                        } 
                     }
                 }
             }
@@ -103,6 +113,10 @@ ConfigSchemaFile=""""";
             {
                 Thread updateThread = new Thread(() => CheckForUpdates(true));
                 updateThread.Start();
+            }
+            else
+            {
+                SetTitle("PlayerCommon Merge Tool v" + Preferences.ToolVersion + " [updates disabled]");
             }
 
             if (File.Exists(Preferences.appData + "\\storedData.json"))
@@ -131,8 +145,15 @@ ConfigSchemaFile=""""";
             Window.GetWindow(this).Title += message;
         }
 
+        private void SetTitle(string message)
+        {
+            Window.GetWindow(this).Title = message;
+        }
+
         private void CheckForUpdates(bool wait)
         {
+            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() => SetTitle("PlayerCommon Merge Tool v" + Preferences.ToolVersion + " [checking for updates]")));
+
             if (wait)
             {
                 Thread.Sleep(2000);
@@ -174,7 +195,7 @@ ConfigSchemaFile=""""";
                 }
                 else
                 {
-                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() => AddToTitle(" [up-to-date]")));
+                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() => SetTitle("PlayerCommon Merge Tool v" + Preferences.ToolVersion + " [up-to-date]")));
                 }
             }
             catch (Exception e)
@@ -454,7 +475,7 @@ ConfigSchemaFile=""""";
                     using (var stream = File.OpenRead(storedData.installLocation + "\\image\\x64\\raw\\character\\playercommon.pac"))
                     {
                         var hash = md5.ComputeHash(stream);
-                        if (Preferences.PlayercommonHash != BitConverter.ToString(hash).Replace("-", string.Empty).ToLowerInvariant())
+                        if (Preferences.LatestPlayercommonHash != BitConverter.ToString(hash).Replace("-", string.Empty).ToLowerInvariant())
                         {
                             MessageBox.Show("The playercommon.pac in \"" + storedData.installLocation + "\\image\\x64\\raw\\character\\\"" + " is not for the correct version of Sonic Frontiers or has been modified. Please make sure your game is up to date with " + Preferences.NameOfGameUpdate + ". The merge operation has been cancelled.", "Error");
                             return;
@@ -467,6 +488,27 @@ ConfigSchemaFile=""""";
                 Debugging.WriteToLog($"Extracting: \"{workspace}playercommon_vanilla.pac\" to \"{workspace}out_vanilla\"");
                 RunCMD("tools/HedgeArcPack.exe", $"\"{workspace}playercommon_vanilla.pac\"", $"\"{workspace}out_vanilla\"", "-E", "-T=rangers");
 
+                if (Preferences.AllowUpdatingPac)
+                {
+                    if (!File.Exists("tools/PlayerCommonUpdaterV2.exe"))
+                    {
+                        MessageBoxResult result = MessageBox.Show("tools/PlayerCommonUpdaterV2.exe could not be found. This could be because of a false-positive virus warning that has removed the file. Pac updating will be disabled until you restart the tool and restore the file. Continue?", "Warning", MessageBoxButton.OKCancel);
+                        
+                        if (result == MessageBoxResult.Cancel)
+                        {
+                            return;
+                        }
+                        else
+                        {
+                            Preferences.AllowUpdatingPac = false;
+                        }
+                    }
+                }
+                else
+                {
+                    Debugging.WriteToLog(".pac updates disabled in Preferences");
+                }
+
                 foreach (var category in mergeCategories)
                 {
                     if (category.HasOffset && category.comboBox.SelectedIndex > 0)
@@ -474,8 +516,10 @@ ConfigSchemaFile=""""";
                         Mod mod = mods[category.comboBox.SelectedIndex - 1];
                         string copyOfPac = workspace + "playercommon_" + category.id + ".pac";
 
-                        // Update the pac file
-                        UpdatePac(mod.path + "\\raw\\character\\playercommon.pac", copyOfPac);
+                        if (Preferences.AllowUpdatingPac)
+                        {
+                            UpdatePac(mod.path + "\\raw\\character\\playercommon.pac", copyOfPac);
+                        }
 
                         Debugging.WriteToLog($"Extracting: \"{copyOfPac}\" to \"{workspace}out_{category.id}\"");
                         RunCMD("tools/HedgeArcPack.exe", $"\"{copyOfPac}\"", $"\"{workspace}out_{category.id}\"", "-E", "-T=rangers");
@@ -678,7 +722,9 @@ ConfigSchemaFile=""""";
 
         private void mnuAbout_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Merge Tool created by Keanine. HedgeArcPack created by Radfordhound. Update Tool created by Blurro", "About");
+            MessageBox.Show("Merge Tool created by Keanine.\n" +
+                "HedgeArcPack created by Radfordhound.\n" +
+                "Update Tool created by Blurro.", "About");
         }
     }
 }

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SF_PlayerCommonMergeTool"
         mc:Ignorable="d"
-        Title="PlayerCommon Merge Tool v1.5" ResizeMode="CanResize" Width="540" MinWidth="540" MaxWidth="540" Height="460" MinHeight="150">
+        Title="PlayerCommon Merge Tool vDEV" ResizeMode="CanResize" Width="540" MinWidth="540" MaxWidth="540" Height="460" MinHeight="150">
     <Grid>
         <Menu DockPanel.Dock="Top" Height="20" VerticalAlignment="Top">
             <MenuItem Header="_File">

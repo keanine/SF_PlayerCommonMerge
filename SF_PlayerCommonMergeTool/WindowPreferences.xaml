@@ -9,14 +9,21 @@
         WindowStartupLocation="CenterOwner"
         Title="Merge Tool Preferences" Height="300" Width="400">
     <Grid>
-        <CheckBox x:Name="chkLogDebugInfo" Content="Log debug information" HorizontalAlignment="Left" Margin="10,102,0,0" VerticalAlignment="Top" />
+        <ScrollViewer Margin="10,40,10,35" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <CheckBox x:Name="chkLogDebugInfo" Content="Log debug information" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0 5 0 5" />
+                <CheckBox x:Name="chkCheckForUpdates" Content="Check for updates on startup" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0 5 0 5" />
+                <CheckBox x:Name="chkUpdatePacFiles" Content="Auto-update pac files before merging" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0 5 0 5" />
+                <StackPanel Orientation="Horizontal" Margin="0 5 0 5">
+                    <Label Content="Update Branch" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                    <ComboBox x:Name="cmbUpdateBranch" Height="20" VerticalAlignment="Center" HorizontalAlignment="Left" Width="200" >
+                        <System:String>Main</System:String>
+                        <System:String>Development</System:String>
+                    </ComboBox>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
         <Button x:Name="btnCancel"  Content="Cancel" HorizontalAlignment="Left" Margin="10,0,0,10" Width="91" Height="20" VerticalAlignment="Bottom" Click="btnCancel_Click"/>
         <Button x:Name="btnApply" Content="Apply" HorizontalAlignment="Left" Margin="106,0,0,10" Width="91" Height="20" VerticalAlignment="Bottom" Click="btnApply_Click"/>
-        <CheckBox x:Name="chkCheckForUpdates" Content="Check for updates on startup" HorizontalAlignment="Left" Margin="10,122,0,0" VerticalAlignment="Top" />
-        <ComboBox x:Name="cmbUpdateBranch" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Width="200" Margin="103,145,0,0" >
-            <System:String>Main</System:String>
-            <System:String>Development</System:String>
-        </ComboBox>
-        <Label Content="Update Branch" HorizontalAlignment="Left" Margin="10,142,0,0" VerticalAlignment="Top"/>
     </Grid>
 </Window>
