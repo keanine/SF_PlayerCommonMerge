@@ -2,24 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Text.Json;
-using ComboBox = System.Windows.Controls.ComboBox;
-using Microsoft.Win32;
-using Path = System.IO.Path;
 using System.Diagnostics;
-using System.Reflection;
+
+using ComboBox = System.Windows.Controls.ComboBox;
+using Path = System.IO.Path;
 
 namespace SF_PlayerCommonMergeTool
 {
@@ -111,7 +101,7 @@ ConfigSchemaFile=""""";
 
             if (Preferences.AllowCheckingForUpdates)
             {
-                Thread updateThread = new Thread(CheckForUpdates);
+                Thread updateThread = new Thread(() => CheckForUpdates(true));
                 updateThread.Start();
             }
 
@@ -141,9 +131,13 @@ ConfigSchemaFile=""""";
             Window.GetWindow(this).Title += message;
         }
 
-        private void CheckForUpdates()
+        private void CheckForUpdates(bool wait)
         {
-            Thread.Sleep(2000);
+            if (wait)
+            {
+                Thread.Sleep(2000);
+            }
+            
             try
             {
                 string selectedUpdateServerURL = string.Empty;
@@ -163,7 +157,7 @@ ConfigSchemaFile=""""";
 
                 if (AutoUpdaterLib.Updater.CheckForUpdates(applicationName, selectedUpdateServerURL, versionFileName))
                 {
-                    MessageBoxResult result = System.Windows.MessageBox.Show("A new update has been found. Do you want to update?", "Update Found", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                    MessageBoxResult result = MessageBox.Show("A new update has been found. Do you want to update?", "Update Found", MessageBoxButton.YesNo, MessageBoxImage.Information);
 
                     if (result == MessageBoxResult.Yes)
                     {
@@ -175,7 +169,7 @@ ConfigSchemaFile=""""";
                         proc1.FileName = "dotnet.exe";
                         Process.Start(proc1);
 
-                        System.Environment.Exit(1);
+                        Environment.Exit(1);
                     }
                 }
                 else
@@ -225,6 +219,7 @@ ConfigSchemaFile=""""";
             {
                 CategoryStackPanel.Children.Clear();
                 categories.Clear();
+                addonCategories.Clear();
                 mods.Clear();
 
                 categories.Add(new Category("Set All", "set_all", CategoryStackPanel, out SetAllComboBox));
@@ -258,6 +253,8 @@ ConfigSchemaFile=""""";
                 SerializeCategory(categoryParry);
                 SerializeCategory(categorySpinDash);
 
+                Debugging.WriteToLog("Temporarily loading all addon categories as the system has not been fully implemented");
+                LoadAllCategoriesFromDirectory();
                 Debugging.WriteToLog("Loaded categories");
 
                 //SerializeCategories();
@@ -315,28 +312,6 @@ ConfigSchemaFile=""""";
                                         break;
                                 }
                             }
-                            foreach (var category in addonCategories)
-                            {
-                                if (category.HasOffset)
-                                {
-                                    if (selection.id == category.id)
-                                    {
-                                        for (int i = 1; i < category.comboBox.Items.Count; i++)
-                                        {
-                                            var item = category.comboBox.Items[i];
-                                            if ((item as Mod).title == selection.modTitle)
-                                            {
-                                                category.comboBox.SelectedItem = item;
-                                                success = true;
-                                            }
-                                            if (success)
-                                                break;
-                                        }
-                                    }
-                                    if (success)
-                                        break;
-                                }
-                            }
                         }
                     }
                 }
@@ -373,6 +348,23 @@ ConfigSchemaFile=""""";
             }
         }
 
+        private void LoadAllCategoriesFromDirectory()
+        {
+            addonCategories.Clear();
+            string directory = Path.Combine(Preferences.appData, "categories");
+            foreach (var file in Directory.GetFiles(directory))
+            {
+                LoadCategoryFromFile(file);
+            }
+        }
+        private void LoadCategoryFromFile(string fileName)
+        {
+            string jsonCategory = File.ReadAllText(fileName);
+            Category category = (Category)JsonSerializer.Deserialize(jsonCategory, typeof(Category));
+            category = new Category(category.name, category.id, category.order, CategoryStackPanel, category.chunks);
+            addonCategories.Add(category);
+        }
+
         public void LoadComboBox(ComboBox comboBox, string[] modFolders)
         {
             comboBox.Items.Clear();
@@ -385,13 +377,13 @@ ConfigSchemaFile=""""";
 
         private void AddToComboBox(object value)
         {
-            foreach (var cateogry in categories)
+            foreach (var category in categories)
             {
-                cateogry.comboBox.Items.Add(value);
+                category.comboBox.Items.Add(value);
             }
-            foreach (var cateogry in addonCategories)
+            foreach (var category in addonCategories)
             {
-                cateogry.comboBox.Items.Add(value);
+                category.comboBox.Items.Add(value);
             }
         }
 
@@ -437,7 +429,7 @@ ConfigSchemaFile=""""";
         {
             if (storedData.installLocation != string.Empty)
             {
-                List<Category> mergeCategories = categories;
+                List<Category> mergeCategories = new List<Category>(categories);
                 mergeCategories.AddRange(addonCategories);
 
                 Debugging.WriteToLog("Running Merge");
@@ -456,6 +448,20 @@ ConfigSchemaFile=""""";
                 }
 
                 Debugging.WriteToLog($"Copying vanilla file");
+
+                using (var md5 = System.Security.Cryptography.MD5.Create())
+                {
+                    using (var stream = File.OpenRead(storedData.installLocation + "\\image\\x64\\raw\\character\\playercommon.pac"))
+                    {
+                        var hash = md5.ComputeHash(stream);
+                        if (Preferences.PlayercommonHash != BitConverter.ToString(hash).Replace("-", string.Empty).ToLowerInvariant())
+                        {
+                            MessageBox.Show("The playercommon.pac in \"" + storedData.installLocation + "\\image\\x64\\raw\\character\\\"" + " is not for the correct version of Sonic Frontiers or has been modified. Please make sure your game is up to date with " + Preferences.NameOfGameUpdate + ". The merge operation has been cancelled.", "Error");
+                            return;
+                        }
+                    }
+                }
+
                 File.Copy(storedData.installLocation + "\\image\\x64\\raw\\character\\playercommon.pac", workspace + "playercommon_vanilla.pac", true);
 
                 Debugging.WriteToLog($"Extracting: \"{workspace}playercommon_vanilla.pac\" to \"{workspace}out_vanilla\"");
@@ -489,22 +495,6 @@ ConfigSchemaFile=""""";
                 string rfl = $"{workspace}\\out_vanilla\\player_common.rfl";
                 byte[] file = File.ReadAllBytes(rfl);
                 Debugging.WriteToLog($"Read vanilla RFL successfully");
-
-                //foreach (var category in categories)
-                //{
-                //    if (category.HasOffset && category.comboBox.SelectedIndex >= 0)
-                //    {
-                //        Debugging.WriteToLog($"Merging bytes from {category.id} RFL");
-                //        byte[] categoryFile = File.ReadAllBytes($"{workspace}\\out_{category.id}\\player_common.rfl");
-                //        category.data = categoryFile.ToList().GetRange(category.offset, category.size).ToArray();
-
-                //        for (int i = 0; i < category.size; i++)
-                //        {
-                //            file[i + category.offset] = category.data[i];
-                //        }
-                //        Debugging.WriteToLog($"Successfully merged bytes from {category.id} RFL");
-                //    }
-                //}
 
                 foreach (var category in mergeCategories)
                 {
@@ -668,6 +658,27 @@ ConfigSchemaFile=""""";
             WindowCategories categoryWindow = new WindowCategories();
             categoryWindow.Owner = this;
             categoryWindow.ShowDialog();
+        }
+
+        private void mnuExit_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
+        private void mnuCheckForUpdates_Click(object sender, RoutedEventArgs e)
+        {
+            Thread updateThread = new Thread(() => CheckForUpdates(false));
+            updateThread.Start();
+        }
+
+        private void mnuContact_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Contact @keanine on Discord if you need help.", "Contact");
+        }
+
+        private void mnuAbout_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Merge Tool created by Keanine. HedgeArcPack created by Radfordhound. Update Tool created by Blurro", "About");
         }
     }
 }

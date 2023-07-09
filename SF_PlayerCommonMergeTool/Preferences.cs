@@ -25,6 +25,12 @@ namespace SF_PlayerCommonMergeTool
         public string updateBranch { get; set; }
         public static string UpdateBranch { get { return instance.updateBranch; } set { instance.updateBranch = value; } }
 
+        public string playercommonHash = "cfb57c2bd3b69b583d77539af5b7fcf4";
+        public static string PlayercommonHash { get { return instance.playercommonHash; } }
+
+        public string nameOfGameUpdate = "Update 2";
+        public static string NameOfGameUpdate { get { return instance.nameOfGameUpdate; } }
+
         public static void Initialize()
         {
             //Load from JSON and create instance

@@ -33,6 +33,11 @@ namespace SF_PlayerCommonMergeTool
 
         [JsonIgnore] public bool HasOffset { get; private set; }
 
+        public Category()
+        {
+
+        }
+
         public Category(string name, string id, StackPanel parent, out ComboBox comboBox)
         {
             this.name = name;
