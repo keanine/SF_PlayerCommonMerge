@@ -22,7 +22,7 @@ namespace SF_PlayerCommonMergeTool
         public string latestPlayercommonHash = "cfb57c2bd3b69b583d77539af5b7fcf4";
         public static string LatestPlayercommonHash { get { return instance.latestPlayercommonHash; } }
 
-        public string nameOfGameUpdate = "Update 2";
+        public string nameOfGameUpdate = "Update 3";
         public static string NameOfGameUpdate { get { return instance.nameOfGameUpdate; } }
 
 

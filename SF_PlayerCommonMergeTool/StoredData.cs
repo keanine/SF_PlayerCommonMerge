@@ -11,11 +11,17 @@ namespace SF_PlayerCommonMergeTool
     {
         public string installLocation { get; set; }
         public List<CategorySelection> categorySelection { get; set; }
+        public List<CategorySelection> categorySelectionTails { get; set; }
+        public List<CategorySelection> categorySelectionKnuckles { get; set; }
+        public List<CategorySelection> categorySelectionAmy { get; set; }
 
         public StoredData()
         {
             installLocation = string.Empty;
             categorySelection = new List<CategorySelection>();
+            categorySelectionTails = new List<CategorySelection>();
+            categorySelectionKnuckles = new List<CategorySelection>();
+            categorySelectionAmy = new List<CategorySelection>();
         }
 
         public struct CategorySelection

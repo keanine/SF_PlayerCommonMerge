@@ -27,8 +27,22 @@ namespace SF_PlayerCommonMergeTool
         private static string executableFileName = "SF_PlayerCommonMergeTool.exe";
 
         public ComboBox SetAllComboBox;
-        public List<Category> categories = new List<Category>();
-        public List<Category> addonCategories = new List<Category>();
+        public ComboBox SetAllComboBoxTails;
+        public ComboBox SetAllComboBoxKnuckles;
+        public ComboBox SetAllComboBoxAmy;
+
+        public List<Category> categoriesSonic = new List<Category>();
+        public List<Category> addonCategoriesSonic = new List<Category>();
+
+        public List<Category> categoriesTails = new List<Category>();
+        public List<Category> addonCategoriesTails = new List<Category>();
+
+        public List<Category> categoriesKnuckles = new List<Category>();
+        public List<Category> addonCategoriesKnuckles = new List<Category>();
+
+        public List<Category> categoriesAmy = new List<Category>();
+        public List<Category> addonCategoriesAmy = new List<Category>();
+
         public List<Mod> mods = new List<Mod>();
 
         public string workspace = "MergeTemp\\";
@@ -239,40 +253,93 @@ ConfigSchemaFile=""""";
             if (storedData.installLocation != string.Empty && Directory.Exists(storedData.installLocation))
             {
                 CategoryStackPanel.Children.Clear();
-                categories.Clear();
-                addonCategories.Clear();
+                categoriesSonic.Clear();
+                addonCategoriesSonic.Clear();
+
+                categoriesTails.Clear();
                 mods.Clear();
 
-                categories.Add(new Category("Set All", "set_all", CategoryStackPanel, out SetAllComboBox));
+                categoriesSonic.Add(new Category("Set All", "set_all", CategoryStackPanel, out SetAllComboBox));
                 SetAllComboBox.SelectionChanged += SetAllComboBox_SelectionChanged;
 
                 TextBlock space = new TextBlock();
                 space.Height = 10;
                 CategoryStackPanel.Children.Add(space);
 
-                // Game Update v1.1
+                categoriesTails.Add(new Category("Set All", "set_all_tails", TailsCategoryStackPanel, out SetAllComboBoxTails));
+                SetAllComboBoxTails.SelectionChanged += SetAllComboBox_SelectionChanged;
+
+                space = new TextBlock();
+                space.Height = 10;
+                TailsCategoryStackPanel.Children.Add(space);
+
+
+                //// Game Update v1.1 ===================================================================================================================
                 //categories.Add(new Category("Open Zone Physics", "openzone", 0x72E0, 0xB20, CategoryStackPanel));
                 //categories.Add(new Category("Cyberspace 3D Physics", "cyber3d", 0x7F80, 0xB20, CategoryStackPanel));
                 //categories.Add(new Category("Cyberspace 2D Physics", "cyber2d", 0x8AA0, 0xB20, CategoryStackPanel));
                 //categories.Add(new Category("Combat & Misc", "gameplay", 0x40, 0x72A0, CategoryStackPanel));
                 //categories.Add(new Category("Parry", "parry", 0x7Cd0, 0x24, CategoryStackPanel));
                 //categories.Add(new Category("Cyloop", "cyloop", 0x5250, 0x1440, CategoryStackPanel));
+                //// ====================================================================================================================================
 
-                // Game Update v1.3
-                categories.Add(new Category("Open Zone Physics", "openzone", 0x73B0, 0xDE8, 1, CategoryStackPanel)); //Includes water physics
-                categories.Add(new Category("Cyberspace 3D Physics", "cyber3d", 0x81A0, 0xC40, 2, CategoryStackPanel));
-                categories.Add(new Category("Cyberspace 2D Physics", "cyber2d", 0x8DE0, 0xC40, 3, CategoryStackPanel));
-                categories.Add(new Category("Combat & Misc", "gameplay", 0x40, 0x7370, 4, CategoryStackPanel));
-                categories.Add(new Category("Cyloop", "cyloop", 0x5410, 0x1440, 5, CategoryStackPanel));
+                //// Game Update v1.3 ===================================================================================================================
+                //categories.Add(new Category("Open Zone Physics", "openzone", 0x73B0, 0xDE8, 1, CategoryStackPanel)); //Includes water physics
+                //categories.Add(new Category("Cyberspace 3D Physics", "cyber3d", 0x81A0, 0xC40, 2, CategoryStackPanel));
+                //categories.Add(new Category("Cyberspace 2D Physics", "cyber2d", 0x8DE0, 0xC40, 3, CategoryStackPanel));
+                //categories.Add(new Category("Combat & Misc", "gameplay", 0x40, 0x7370, 4, CategoryStackPanel));
+                //categories.Add(new Category("Cyloop", "cyloop", 0x5410, 0x1440, 5, CategoryStackPanel));
+                //
+                //// TEMP. These should be dynamically loaded, hence why they are serialized and then loaded from the directory
+                //Category categoryParry = new Category("Parry", "parry", 6, null, new CategoryChunk(0x7B54, 0x24));
+                //Category categorySpinDash = new Category("Spin Dash", "spindash", 7, null,
+                //    new CategoryChunk(0x7E50, 0xF8),
+                //    new CategoryChunk(0x8C40, 0xF8),
+                //    new CategoryChunk(0x9880, 0xF8));
+                //SerializeCategory(categoryParry);
+                //SerializeCategory(categorySpinDash);
+                //// ====================================================================================================================================
 
+                // Game Update v1.4 ===================================================================================================================
 
-                Category categoryParry = new Category("Parry", "parry", 6, null, new CategoryChunk(0x7B54, 0x24));
-                Category categorySpinDash = new Category("Spin Dash", "spindash", 7, null,
-                    new CategoryChunk(0x7E50, 0xF8),
-                    new CategoryChunk(0x8C40, 0xF8),
-                    new CategoryChunk(0x9880, 0xF8));
+                // Sonic
+                categoriesSonic.Add(new Category("Open Zone Physics", "openzone", 0x8080, 0xEE0, 1, CategoryStackPanel));
+                categoriesSonic.Add(new Category("Cyberspace 3D Physics", "cyber3d", 0x9110, 0xEE0, 2, CategoryStackPanel));
+                categoriesSonic.Add(new Category("2D Physics", "cyber2d", 0x9FF0, 0xEE0, 3, CategoryStackPanel));
+                categoriesSonic.Add(new Category("Water Physics", "water", 0x8F60, 0x1A8, 4, CategoryStackPanel));
+                categoriesSonic.Add(new Category("Combat & Misc", "gameplay", 0x40, 0x8040, 5, CategoryStackPanel));
+                categoriesSonic.Add(new Category("Cyloop", "cyloop", 0x6098, 0x1460, 6, CategoryStackPanel));
+
+                // Sonic TEMP. These should be dynamically loaded, hence why they are serialized and then loaded from the directory
+                Category categoryParry = new Category("Parry", "parry", 7, null, new CategoryChunk(0x8878, 0x60));
+                Category categorySpinDash = new Category("Spin Dash", "spindash", 8, null,
+                    new CategoryChunk(0x8BB0, 0xF8),
+                    new CategoryChunk(0x9C40, 0xF8),
+                    new CategoryChunk(0xAB20, 0xF8));
                 SerializeCategory(categoryParry);
                 SerializeCategory(categorySpinDash);
+                // ====================================================================================================================================
+
+                // Tails
+                categoriesTails.Add(new Category("Open Zone Physics", "openzone", 0x61A0, 0xCB0, 1, TailsCategoryStackPanel));
+                categoriesTails.Add(new Category("2D Physics", "cyber2d", 0x7000, 0xCB0, 2, TailsCategoryStackPanel));
+                categoriesTails.Add(new Category("Water Physics", "water", 0x6E50, 0x1A8, 3, TailsCategoryStackPanel));
+                categoriesTails.Add(new Category("Combat & Misc", "gameplay", 0x40, 0x6160, 4, TailsCategoryStackPanel));
+                categoriesTails.Add(new Category("Cyloop", "cyloop", 0x4D38, 0x1460, 5, TailsCategoryStackPanel));
+
+                // Knuckles
+                //categories.Add(new Category("Open Zone Physics", "openzone", 0x6260, 0xC00, 1, CategoryStackPanel));
+                //categories.Add(new Category("2D Physics", "cyber2d", 0x7010, 0xC00, 2, CategoryStackPanel));
+                //categories.Add(new Category("Water Physics", "water", 0x6E60, 0x1A8, 3, CategoryStackPanel));
+                //categories.Add(new Category("Combat & Misc", "gameplay", 0x40, 0x6220, 4, CategoryStackPanel));
+                //categories.Add(new Category("Cyloop", "cyloop", 0x4DF8, 0x1460, 5, CategoryStackPanel));
+
+                // Amy
+                //categories.Add(new Category("Open Zone Physics", "openzone", 0x61A0, 0xD30, 1, CategoryStackPanel));
+                //categories.Add(new Category("2D Physics", "cyber2d", 0x7080, 0xD30, 2, CategoryStackPanel));
+                //categories.Add(new Category("Water Physics", "water", 0x6ED0, 0x1A8, 3, CategoryStackPanel));
+                //categories.Add(new Category("Combat & Misc", "gameplay", 0x40, 0x6160, 4, CategoryStackPanel));
+                //categories.Add(new Category("Cyloop", "cyloop", 0x4D40, 0x1460, 5, CategoryStackPanel));
 
                 Debugging.WriteToLog("Temporarily loading all addon categories as the system has not been fully implemented");
                 LoadAllCategoriesFromDirectory();
@@ -302,53 +369,75 @@ ConfigSchemaFile=""""";
                     AddToComboBox(mod);
                 }
 
-                string modFolder = modsFolder + "MergedPlayerCommon";
+                LoadDropdownDefaults("Sonic", storedData.categorySelection, categoriesSonic);
+                LoadDropdownDefaults("Tails", storedData.categorySelectionTails, categoriesTails);
+                LoadDropdownDefaults("Knuckles", storedData.categorySelectionKnuckles, categoriesKnuckles);
+                LoadDropdownDefaults("Amy", storedData.categorySelectionAmy, categoriesAmy);
+                Debugging.WriteToLog("Finished Loading");
+            }
+        }
 
-                if (Directory.Exists(modFolder))
+        private void LoadDropdownDefaults(string id, List<StoredData.CategorySelection> categorySelection, List<Category> characterCategories)
+        {
+            string modFolder = modsFolder + "Merged" + id;
+
+            if (Directory.Exists(modFolder))
+            {
+                if (categorySelection.Count > 0)
                 {
-                    if (storedData.categorySelection.Count > 0)
+                    foreach (var selection in categorySelection)
                     {
-                        foreach (var selection in storedData.categorySelection)
+                        bool success = false;
+                        foreach (var category in characterCategories)
                         {
-                            bool success = false;
-                            foreach (var category in categories)
+                            if (category.HasOffset)
                             {
-                                if (category.HasOffset)
+                                if (selection.id == category.id)
                                 {
-                                    if (selection.id == category.id)
+                                    for (int i = 1; i < category.comboBox.Items.Count; i++)
                                     {
-                                        for (int i = 1; i < category.comboBox.Items.Count; i++)
+                                        var item = category.comboBox.Items[i];
+                                        if ((item as Mod).title == selection.modTitle)
                                         {
-                                            var item = category.comboBox.Items[i];
-                                            if ((item as Mod).title == selection.modTitle)
-                                            {
-                                                category.comboBox.SelectedItem = item;
-                                                success = true;
-                                            }
-                                            if (success)
-                                                break;
+                                            category.comboBox.SelectedItem = item;
+                                            success = true;
                                         }
+                                        if (success)
+                                            break;
                                     }
-                                    if (success)
-                                        break;
                                 }
+                                if (success)
+                                    break;
                             }
                         }
                     }
                 }
-                else
+            }
+            else
+            {
+                switch (id)
                 {
-                    storedData.categorySelection.Clear();
-                    SaveStoredData();
-                    Debugging.WriteToLog("No mods folder found");
+                    case "Sonic":
+                        storedData.categorySelection.Clear();
+                        break;
+                    case "Tails":
+                        storedData.categorySelectionTails.Clear();
+                        break;
+                    case "Knuckles":
+                        storedData.categorySelectionKnuckles.Clear();
+                        break;
+                    case "Amy":
+                        storedData.categorySelectionAmy.Clear();
+                        break;
                 }
-                Debugging.WriteToLog("Finished Loading");
+                SaveStoredData();
+                Debugging.WriteToLog("No mods folder found");
             }
         }
 
         private void SerializeCategories()
         {
-            foreach (var category in categories)
+            foreach (var category in categoriesSonic)
             {
                 SerializeCategory(category);
             }
@@ -371,7 +460,7 @@ ConfigSchemaFile=""""";
 
         private void LoadAllCategoriesFromDirectory()
         {
-            addonCategories.Clear();
+            addonCategoriesSonic.Clear();
             string directory = Path.Combine(Preferences.appData, "categories");
             foreach (var file in Directory.GetFiles(directory))
             {
@@ -383,7 +472,7 @@ ConfigSchemaFile=""""";
             string jsonCategory = File.ReadAllText(fileName);
             Category category = (Category)JsonSerializer.Deserialize(jsonCategory, typeof(Category));
             category = new Category(category.name, category.id, category.order, CategoryStackPanel, category.chunks);
-            addonCategories.Add(category);
+            addonCategoriesSonic.Add(category);
         }
 
         public void LoadComboBox(ComboBox comboBox, string[] modFolders)
@@ -398,11 +487,11 @@ ConfigSchemaFile=""""";
 
         private void AddToComboBox(object value)
         {
-            foreach (var category in categories)
+            foreach (var category in categoriesSonic)
             {
                 category.comboBox.Items.Add(value);
             }
-            foreach (var category in addonCategories)
+            foreach (var category in addonCategoriesSonic)
             {
                 category.comboBox.Items.Add(value);
             }
@@ -410,11 +499,11 @@ ConfigSchemaFile=""""";
 
         private void SetAllComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            foreach (var cateogry in categories)
+            foreach (var cateogry in categoriesSonic)
             {
                 cateogry.comboBox.SelectedIndex = (sender as ComboBox).SelectedIndex;
             }
-            foreach (var cateogry in addonCategories)
+            foreach (var cateogry in addonCategoriesSonic)
             {
                 cateogry.comboBox.SelectedIndex = (sender as ComboBox).SelectedIndex;
             }
@@ -448,14 +537,36 @@ ConfigSchemaFile=""""";
 
         private void MergeButton_Click(object sender, RoutedEventArgs e)
         {
+            Merge(categoriesSonic, addonCategoriesSonic, "Sonic", "player_common");
+        }
+
+        private void MergeButtonTails_Click(object sender, RoutedEventArgs e)
+        {
+            Merge(categoriesTails, addonCategoriesTails, "Tails", "tails_common");
+        }
+
+        private void MergeButtonKnuckles_Click(object sender, RoutedEventArgs e)
+        {
+            Merge(categoriesKnuckles, addonCategoriesKnuckles, "Knuckles", "knuckles_common");
+        }
+
+        private void MergeButtonAmy_Click(object sender, RoutedEventArgs e)
+        {
+            Merge(categoriesAmy, addonCategoriesAmy, "Amy", "amy_common");
+        }
+
+        private void Merge(List<Category> characterCategories, List<Category> characterAddonCategories, string id, string playerCommonRFL)
+        {
             if (storedData.installLocation != string.Empty)
             {
-                List<Category> mergeCategories = new List<Category>(categories);
-                mergeCategories.AddRange(addonCategories);
+                string pacFile = "playercommon";
 
-                Debugging.WriteToLog("Running Merge");
+                List<Category> mergeCategories = new List<Category>(characterCategories);
+                mergeCategories.AddRange(characterAddonCategories);
 
-                string modFolder = modsFolder + "MergedPlayerCommon";
+                Debugging.WriteToLog("Running Merge for " + id);
+
+                string modFolder = modsFolder + "Merged" + id;
                 string newPacFolder = modFolder + "\\raw\\character\\";
 
                 if (!Directory.Exists(newPacFolder))
@@ -468,25 +579,25 @@ ConfigSchemaFile=""""";
                     Directory.CreateDirectory(workspace);
                 }
 
-                Debugging.WriteToLog($"Copying vanilla file");
+                Debugging.WriteToLog($"Copying vanilla {id} file");
 
                 using (var md5 = System.Security.Cryptography.MD5.Create())
                 {
-                    using (var stream = File.OpenRead(storedData.installLocation + "\\image\\x64\\raw\\character\\playercommon.pac"))
+                    using (var stream = File.OpenRead(storedData.installLocation + "\\image\\x64\\raw\\character\\" + pacFile + ".pac"))
                     {
                         var hash = md5.ComputeHash(stream);
                         if (Preferences.LatestPlayercommonHash != BitConverter.ToString(hash).Replace("-", string.Empty).ToLowerInvariant())
                         {
-                            MessageBox.Show("The playercommon.pac in \"" + storedData.installLocation + "\\image\\x64\\raw\\character\\\"" + " is not for the correct version of Sonic Frontiers or has been modified. Please make sure your game is up to date with " + Preferences.NameOfGameUpdate + ". The merge operation has been cancelled.", "Error");
+                            MessageBox.Show($"The {pacFile}.pac in \"" + storedData.installLocation + "\\image\\x64\\raw\\character\\\"" + " is not for the correct version of Sonic Frontiers or has been modified. Please make sure your game is up to date with " + Preferences.NameOfGameUpdate + ". The merge operation has been cancelled.", "Error");
                             return;
                         }
                     }
                 }
 
-                File.Copy(storedData.installLocation + "\\image\\x64\\raw\\character\\playercommon.pac", workspace + "playercommon_vanilla.pac", true);
+                File.Copy(storedData.installLocation + $"\\image\\x64\\raw\\character\\{pacFile}.pac", workspace + $"{pacFile}_vanilla.pac", true);
 
-                Debugging.WriteToLog($"Extracting: \"{workspace}playercommon_vanilla.pac\" to \"{workspace}out_vanilla\"");
-                RunCMD("tools/HedgeArcPack.exe", $"\"{workspace}playercommon_vanilla.pac\"", $"\"{workspace}out_vanilla\"", "-E", "-T=rangers");
+                Debugging.WriteToLog($"Extracting: \"{workspace}{pacFile}_vanilla.pac\" to \"{workspace}out_vanilla\"");
+                RunCMD("tools/HedgeArcPack.exe", $"\"{workspace}{pacFile}_vanilla.pac\"", $"\"{workspace}out_vanilla\"", "-E", "-T=rangers");
 
                 if (Preferences.AllowUpdatingPac)
                 {
@@ -514,11 +625,11 @@ ConfigSchemaFile=""""";
                     if (category.HasOffset && category.comboBox.SelectedIndex > 0)
                     {
                         Mod mod = mods[category.comboBox.SelectedIndex - 1];
-                        string copyOfPac = workspace + "playercommon_" + category.id + ".pac";
+                        string copyOfPac = workspace + $"{pacFile}_" + category.id + ".pac";
 
                         if (Preferences.AllowUpdatingPac)
                         {
-                            UpdatePac(mod.path + "\\raw\\character\\playercommon.pac", copyOfPac);
+                            UpdatePac(mod.path + $"\\raw\\character\\{pacFile}.pac", copyOfPac);
                         }
 
                         Debugging.WriteToLog($"Extracting: \"{copyOfPac}\" to \"{workspace}out_{category.id}\"");
@@ -527,8 +638,8 @@ ConfigSchemaFile=""""";
                     }
                     else if (category.comboBox.SelectedIndex == 0)
                     {
-                        Debugging.WriteToLog($"Extracting: \"{workspace}playercommon_vanilla.pac\" to \"{workspace}out_{category.id}\"");
-                        RunCMD("tools/HedgeArcPack.exe", $"\"{workspace}playercommon_vanilla.pac\"", $"\"{workspace}out_{category.id}\"", "-E", "-T=rangers");
+                        Debugging.WriteToLog($"Extracting: \"{workspace}{pacFile}_vanilla.pac\" to \"{workspace}out_{category.id}\"");
+                        RunCMD("tools/HedgeArcPack.exe", $"\"{workspace}{pacFile}_vanilla.pac\"", $"\"{workspace}out_{category.id}\"", "-E", "-T=rangers");
                     }
                 }
                 Debugging.WriteToLog($"Extracted all category files");
@@ -536,7 +647,7 @@ ConfigSchemaFile=""""";
                 CleanUpPlayerCommonUpdater();
 
                 Debugging.WriteToLog($"Read vanilla RFL");
-                string rfl = $"{workspace}\\out_vanilla\\player_common.rfl";
+                string rfl = $"{workspace}\\out_vanilla\\{playerCommonRFL}.rfl";
                 byte[] file = File.ReadAllBytes(rfl);
                 Debugging.WriteToLog($"Read vanilla RFL successfully");
 
@@ -545,7 +656,7 @@ ConfigSchemaFile=""""";
                     if (category.HasOffset && category.comboBox.SelectedIndex >= 0)
                     {
                         Debugging.WriteToLog($"Merging bytes from {category.id} RFL");
-                        byte[] categoryFile = File.ReadAllBytes($"{workspace}\\out_{category.id}\\player_common.rfl");
+                        byte[] categoryFile = File.ReadAllBytes($"{workspace}\\out_{category.id}\\{playerCommonRFL}.rfl");
 
                         foreach (var chunk in category.chunks)
                         {
@@ -567,7 +678,7 @@ ConfigSchemaFile=""""";
                 RunCMD("tools/HedgeArcPack.exe", $"\"{workspace}out_vanilla\"", $"\"{workspace}out_vanilla.pac\"", "-P", "-T=rangers");
                 Debugging.WriteToLog($"Successfully packed RFL");
 
-                File.Move($"{workspace}\\out_vanilla.pac", newPacFolder + "playercommon.pac", true);
+                File.Move($"{workspace}\\out_vanilla.pac", newPacFolder + $"{pacFile}.pac", true);
                 File.WriteAllText(modFolder + "\\mod.ini", iniTemplate);
                 Debugging.WriteToLog($"Created merged mod");
 
@@ -584,13 +695,27 @@ ConfigSchemaFile=""""";
 
                     if (mod != null)
                     {
-                        storedData.categorySelection.Add(new StoredData.CategorySelection(category.id, (category.comboBox.SelectedItem as Mod).title));
+                        switch (id)
+                        {
+                            case "Sonic":
+                                storedData.categorySelection.Add(new StoredData.CategorySelection(category.id, (category.comboBox.SelectedItem as Mod).title));
+                                break;
+                            case "Tails":
+                                storedData.categorySelectionTails.Add(new StoredData.CategorySelection(category.id, (category.comboBox.SelectedItem as Mod).title));
+                                break;
+                            case "Knuckles":
+                                storedData.categorySelectionKnuckles.Add(new StoredData.CategorySelection(category.id, (category.comboBox.SelectedItem as Mod).title));
+                                break;
+                            case "Amy":
+                                storedData.categorySelectionAmy.Add(new StoredData.CategorySelection(category.id, (category.comboBox.SelectedItem as Mod).title));
+                                break;
+                        }
                     }
                 }
                 SaveStoredData();
 
                 Debugging.WriteToLog($"Merge Successful!");
-                MessageBox.Show("You can now close this tool, open Hedge Mod Manager and enable the new mod MergedPlayerCommon", "Merge complete!");
+                MessageBox.Show($"You can now close this tool, open Hedge Mod Manager and enable the newly generated mod \"Merged {id}\"", "Merge complete!");
             }
         }
 

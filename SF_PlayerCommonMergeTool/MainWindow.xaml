@@ -27,12 +27,38 @@
         <TabControl Margin="0,60,0,0" BorderThickness="0 1 0 0">
             <TabItem Header="Sonic">
                 <Grid>
-                <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,10,0,40">
-                    <StackPanel x:Name="CategoryStackPanel"/>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,10,0,40">
+                        <StackPanel x:Name="CategoryStackPanel"/>
                     </ScrollViewer>
-                    <Button x:Name="MergeButton" Content="Merge" Margin="10,0,10,10" Click="MergeButton_Click" Height="20" VerticalAlignment="Bottom"/>
+                    <Button x:Name="MergeButton" Content="Merge Sonic" Margin="10,0,10,10" Click="MergeButton_Click" Height="20" VerticalAlignment="Bottom"/>
                 </Grid>
+            </TabItem>
+            
+            <TabItem Header="Tails">
+                <Grid>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,10,0,40">
+                        <StackPanel x:Name="TailsCategoryStackPanel"/>
+                    </ScrollViewer>
+                    <Button x:Name="MergeTails" Content="Merge Tails" Margin="10,0,10,10" Click="MergeButtonTails_Click" Height="20" VerticalAlignment="Bottom"/>
+                </Grid>
+            </TabItem>
 
+            <TabItem Header="Knuckles">
+                <Grid>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,10,0,40">
+                        <StackPanel x:Name="KnucklesCategoryStackPanel"/>
+                    </ScrollViewer>
+                    <Button x:Name="MergeKnuckles" Content="Merge Knuckles" Margin="10,0,10,10" Click="MergeButtonKnuckles_Click" Height="20" VerticalAlignment="Bottom"/>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Amy">
+                <Grid>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,10,0,40">
+                        <StackPanel x:Name="AmyCategoryStackPanel"/>
+                    </ScrollViewer>
+                    <Button x:Name="MergeAmy" Content="Merge Amy" Margin="10,0,10,10" Click="MergeButtonAmy_Click" Height="20" VerticalAlignment="Bottom"/>
+                </Grid>
             </TabItem>
         </TabControl>
 
