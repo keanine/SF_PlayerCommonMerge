@@ -25,7 +25,7 @@ namespace SF_PlayerCommonMergeTool
 
             chkLogDebugInfo.IsChecked = Preferences.LogDebugInformation;
             chkCheckForUpdates.IsChecked = Preferences.AllowCheckingForUpdates;
-            chkUpdatePacFiles.IsChecked = Preferences.AllowUpdatingPac;
+            //chkUpdatePacFiles.IsChecked = Preferences.AllowUpdatingPac;
             cmbUpdateBranch.SelectedValue = Preferences.UpdateBranch;
         }
 
@@ -34,7 +34,7 @@ namespace SF_PlayerCommonMergeTool
             Preferences.LogDebugInformation = (bool)chkLogDebugInfo.IsChecked;
             Preferences.AllowCheckingForUpdates = (bool) chkCheckForUpdates.IsChecked;
             Preferences.UpdateBranch = cmbUpdateBranch.SelectedValue.ToString();
-            Preferences.AllowUpdatingPac = (bool)chkUpdatePacFiles.IsChecked;
+            //Preferences.AllowUpdatingPac = (bool)chkUpdatePacFiles.IsChecked;
 
             Preferences.Save();
             this.Close();

@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
 using System.Text.Json;
 using System.Diagnostics;
 
@@ -27,52 +26,6 @@ namespace SF_PlayerCommonMergeTool
         private static string versionFileName = "version.ini";
         private static string updateListFileName = "updatelist.txt";
         private static string executableFileName = "SF_PlayerCommonMergeTool.exe";
-
-        public class Character
-        {
-            public string name;
-            public ComboBox SetAllComboBox;
-            public StackPanel stackPanel;
-            public List<Category> categories = new List<Category>();
-            public List<Category> addonCategories = new List<Category>();
-
-            public Character()
-            {
-
-            }
-
-            public void InitSetAllComboBox(string id)
-            {
-                Category category = new Category("Set All", id, name);
-                categories.Add(category);
-
-                SetAllComboBox = category.InitComboBox(stackPanel);
-                SetAllComboBox.SelectionChanged += SetAllComboBox_SelectionChanged;
-
-                TextBlock space = new TextBlock();
-                space.Height = 10;
-                stackPanel.Children.Add(space);
-            }
-
-            private void SetAllComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-            {
-                foreach (var cateogry in categories)
-                {
-                    cateogry.comboBox.SelectedIndex = (sender as ComboBox).SelectedIndex;
-                }
-                foreach (var cateogry in addonCategories)
-                {
-                    cateogry.comboBox.SelectedIndex = (sender as ComboBox).SelectedIndex;
-                }
-            }
-
-            public void AddCategory(string name, string id, int offset, int size, int order)
-            {
-                Category category = new Category(name, id, offset, size, order, this.name);
-                category.InitComboBox(stackPanel);
-                categories.Add(category);
-            }
-        }
 
         public Dictionary<string, Character> characters = new Dictionary<string, Character>()
         {
@@ -101,8 +54,8 @@ namespace SF_PlayerCommonMergeTool
 
         private string[] requiredTools =
         {
-            "HedgeArcPack.exe",
-            "PlayerCommonUpdaterV2.exe"
+            "HedgeArcPack.exe"
+            //"PlayerCommonUpdaterV2.exe"
         };
 
         public string iniTemplate =
@@ -125,10 +78,8 @@ DLLFile=""""
 CodeFile=""""
 ConfigSchemaFile=""""";
 
-        public MainWindow()
+        private void InitCharacters()
         {
-            InitializeComponent();
-
             foreach (var key in characters.Keys)
             {
                 characters[key].name = key;
@@ -137,10 +88,16 @@ ConfigSchemaFile=""""";
             characters["Tails"].stackPanel = TailsCategoryStackPanel;
             characters["Knuckles"].stackPanel = KnucklesCategoryStackPanel;
             characters["Amy"].stackPanel = AmyCategoryStackPanel;
+        }
 
+        public MainWindow()
+        {
+            InitializeComponent();
+            InitCharacters();
 
             Preferences.appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\SonicFrontiersModding\\SF_PlayerCommonMerge\\";
             Preferences.Initialize();
+            Preferences.AllowUpdatingPac = false;
 
             this.Title = "PlayerCommon Merge Tool v" + Preferences.ToolVersion.ToString("0.0");
 
@@ -178,7 +135,7 @@ ConfigSchemaFile=""""";
             }
             else
             {
-                SetTitle("PlayerCommon Merge Tool v" + Preferences.ToolVersion + " [updates disabled]");
+                SetTitle("[updates disabled]");
             }
 
             if (File.Exists(Preferences.appData + "\\storedData.json"))
@@ -207,14 +164,18 @@ ConfigSchemaFile=""""";
             Window.GetWindow(this).Title += message;
         }
 
+        //private void SetTitle(string message)
+        //{
+        //    Window.GetWindow(this).Title = message;
+        //}
         private void SetTitle(string message)
         {
-            Window.GetWindow(this).Title = message;
+            Window.GetWindow(this).Title = "PlayerCommon Merge Tool v" + Preferences.ToolVersion.ToString("0.0") + " " + message;
         }
 
         private void CheckForUpdates(bool wait)
         {
-            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() => SetTitle("PlayerCommon Merge Tool v" + Preferences.ToolVersion + " [checking for updates]")));
+            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() => SetTitle("[checking for updates]")));
 
             if (wait)
             {
@@ -257,7 +218,7 @@ ConfigSchemaFile=""""";
                 }
                 else
                 {
-                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() => SetTitle("PlayerCommon Merge Tool v" + Preferences.ToolVersion + " [up-to-date]")));
+                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() => SetTitle("[up-to-date]")));
                 }
             }
             catch (Exception e)

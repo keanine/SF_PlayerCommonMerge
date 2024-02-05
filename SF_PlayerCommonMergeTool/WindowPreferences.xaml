@@ -13,7 +13,7 @@
             <StackPanel>
                 <CheckBox x:Name="chkLogDebugInfo" Content="Log debug information" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0 5 0 5" />
                 <CheckBox x:Name="chkCheckForUpdates" Content="Check for updates on startup" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0 5 0 5" />
-                <CheckBox x:Name="chkUpdatePacFiles" Content="Auto-update pac files before merging" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0 5 0 5" />
+                <!--<CheckBox x:Name="chkUpdatePacFiles" Content="Auto-update pac files before merging" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0 5 0 5" />-->
                 <StackPanel Orientation="Horizontal" Margin="0 5 0 5">
                     <Label Content="Update Branch" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                     <ComboBox x:Name="cmbUpdateBranch" Height="20" VerticalAlignment="Center" HorizontalAlignment="Left" Width="200" >
