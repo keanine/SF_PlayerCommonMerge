@@ -12,6 +12,7 @@ namespace SF_PlayerCommonMergeTool
     [System.Serializable]
     public class CategoryChunk
     {
+        [JsonInclude] public string comment = string.Empty;
         [JsonIgnore] public int offsetValue { get; private set; }
         [JsonIgnore] public int sizeValue { get; private set; }
         [JsonInclude] public string offset = string.Empty;
@@ -22,14 +23,16 @@ namespace SF_PlayerCommonMergeTool
 
         }
 
-        public CategoryChunk(int offset, int size)
+        public CategoryChunk(int offset, int size, string comment)
         {
+            this.comment = comment;
             this.offsetValue = offset;
             this.sizeValue = size;
             SerializeHex();
         }
-        public CategoryChunk(string offset, string size)
+        public CategoryChunk(string offset, string size, string comment)
         {
+            this.comment = comment;
             this.offset = offset;
             this.size = size;
             DeserializeHex();
@@ -65,17 +68,15 @@ namespace SF_PlayerCommonMergeTool
 
         }
 
-        public Category(string name, string id, StackPanel parent, string character, out ComboBox comboBox)
+        public Category(string name, string id, string character)
         {
             this.name = name;
             this.id = id;
-            comboBox = InitComboBox(parent);
-            this.comboBox = comboBox;
             this.order = 0;
             this.character = character;
         }
 
-        public Category(string name, string id, int offset, int size, int order, StackPanel parent, string character)
+        public Category(string name, string id, int offset, int size, int order, string character)
         {
             this.name = name;
             this.id = id;
@@ -84,12 +85,10 @@ namespace SF_PlayerCommonMergeTool
             HasOffset = true;
 
             chunks = new CategoryChunk[1];
-            chunks[0] = new CategoryChunk(offset, size);
-
-            comboBox = InitComboBox(parent);
+            chunks[0] = new CategoryChunk(offset, size, "");
         }
 
-        public Category(string name, string id, int order, StackPanel? parent, string character, params CategoryChunk[] chunks)
+        public Category(string name, string id, int order, string character, params CategoryChunk[] chunks)
         {
             this.name = name;
             this.id = id;
@@ -97,11 +96,6 @@ namespace SF_PlayerCommonMergeTool
             HasOffset = true;
             this.chunks = chunks;
             this.character = character;
-
-            if (parent != null)
-            {
-                comboBox = InitComboBox(parent);
-            }
         }
 
         public ComboBox InitComboBox(StackPanel parent)

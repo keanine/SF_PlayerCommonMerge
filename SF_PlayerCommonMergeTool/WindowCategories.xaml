@@ -6,11 +6,42 @@
         xmlns:local="clr-namespace:SF_PlayerCommonMergeTool"
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner"
-        Title="Merge Tool Categories" Height="450" Width="800">
+        Title="Merge Tool Addon Categories" Height="450" Width="489">
     <Grid>
-        <ScrollViewer Margin="0,70,0,73">
-            <StackPanel x:Name="stackCategories"/>
-        </ScrollViewer>
+        <TabControl Margin="0,60,0,0" BorderThickness="0 1 0 0">
+            <TabItem Header="Sonic">
+                <Grid>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,10,0,40">
+                        <StackPanel x:Name="stackSonicCategories"/>
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Tails">
+                <Grid>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,10,0,40">
+                        <StackPanel x:Name="stackTailsCategories"/>
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Knuckles">
+                <Grid>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,10,0,40">
+                        <StackPanel x:Name="stackKnucklesCategories"/>
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Amy">
+                <Grid>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,10,0,40">
+                        <StackPanel x:Name="stackAmyCategories"/>
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
         <Button x:Name="btnApply" Content="Apply" Margin="0,0,10,10" HorizontalAlignment="Right" Width="76" Height="20" VerticalAlignment="Bottom" Click="btnApply_Click"/>
         <Button x:Name="btnCancel" Content="Cancel" Margin="0,0,91,10" HorizontalAlignment="Right" Width="76" Height="20" VerticalAlignment="Bottom" Click="btnCancel_Click"/>
         <Button x:Name="btnDownload" Content="Download More" Margin="10,0,0,10" Height="20" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="106" Click="btnDownload_Click"/>
