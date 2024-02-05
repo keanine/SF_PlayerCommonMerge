@@ -19,6 +19,7 @@ namespace SF_PlayerCommonMergeTool
     /// </summary>
     public partial class MainWindow : Window
     {
+        private static string titleName = "MergeTool";
         private static string applicationName = "PlayerCommonMergeTool";
         private static string updateServerURL = @"https://raw.githubusercontent.com/keanine/SF_PlayerCommonMerge/main/UpdateServer/";
         private static string internalUpdateServerURL = @"https://raw.githubusercontent.com/keanine/SF_PlayerCommonMerge/main/InternalUpdateServer/";
@@ -99,7 +100,7 @@ ConfigSchemaFile=""""";
             Preferences.Initialize();
             Preferences.AllowUpdatingPac = false;
 
-            this.Title = "PlayerCommon Merge Tool v" + Preferences.ToolVersion.ToString("0.0");
+            SetTitleUpdateMessage("");
 
             if (Directory.Exists("tools"))
             {
@@ -135,7 +136,7 @@ ConfigSchemaFile=""""";
             }
             else
             {
-                SetTitle("[updates disabled]");
+                SetTitleUpdateMessage("updates disabled");
             }
 
             if (File.Exists(Preferences.appData + "\\storedData.json"))
@@ -159,23 +160,15 @@ ConfigSchemaFile=""""";
             }
         }
 
-        private void AddToTitle(string message)
+        private void SetTitleUpdateMessage(string message)
         {
-            Window.GetWindow(this).Title += message;
-        }
-
-        //private void SetTitle(string message)
-        //{
-        //    Window.GetWindow(this).Title = message;
-        //}
-        private void SetTitle(string message)
-        {
-            Window.GetWindow(this).Title = "PlayerCommon Merge Tool v" + Preferences.ToolVersion.ToString("0.0") + " " + message;
+            //Window.GetWindow(this).Title = titleName + " v" + Preferences.ToolVersion.ToString("0.0") + " | Frontiers v1.41 | " + message;
+            Window.GetWindow(this).Title = $"{titleName} v{Preferences.ToolVersion.ToString("0.0")} | Frontiers v1.41 | {message}";
         }
 
         private void CheckForUpdates(bool wait)
         {
-            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() => SetTitle("[checking for updates]")));
+            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() => SetTitleUpdateMessage("checking for updates")));
 
             if (wait)
             {
@@ -218,7 +211,7 @@ ConfigSchemaFile=""""";
                 }
                 else
                 {
-                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() => SetTitle("[up-to-date]")));
+                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() => SetTitleUpdateMessage("up-to-date")));
                 }
             }
             catch (Exception e)
