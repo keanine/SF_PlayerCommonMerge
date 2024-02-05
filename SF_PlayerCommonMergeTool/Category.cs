@@ -12,13 +12,39 @@ namespace SF_PlayerCommonMergeTool
     [System.Serializable]
     public class CategoryChunk
     {
-        [JsonInclude] public int offset;
-        [JsonInclude] public int size;
+        [JsonIgnore] public int offsetValue { get; private set; }
+        [JsonIgnore] public int sizeValue { get; private set; }
+        [JsonInclude] public string offset = string.Empty;
+        [JsonInclude] public string size = string.Empty;
 
-        public CategoryChunk(int offset, int size) 
-        { 
+        public CategoryChunk()
+        {
+
+        }
+
+        public CategoryChunk(int offset, int size)
+        {
+            this.offsetValue = offset;
+            this.sizeValue = size;
+            SerializeHex();
+        }
+        public CategoryChunk(string offset, string size)
+        {
             this.offset = offset;
             this.size = size;
+            DeserializeHex();
+        }
+
+        public void SerializeHex()
+        {
+            offset = "0x" + offsetValue.ToString("X");
+            size = "0x" + sizeValue.ToString("X");
+        }
+
+        public void DeserializeHex()
+        {
+            offsetValue = Convert.ToInt32(offset, 16);
+            sizeValue = Convert.ToInt32(size, 16);
         }
     }
 
@@ -27,6 +53,7 @@ namespace SF_PlayerCommonMergeTool
     {
         [JsonInclude] public string name;
         [JsonInclude] public string id;
+        [JsonInclude] public string character;
         [JsonInclude] public CategoryChunk[] chunks;
         [JsonInclude] public int order;
         public ComboBox comboBox;
@@ -38,20 +65,22 @@ namespace SF_PlayerCommonMergeTool
 
         }
 
-        public Category(string name, string id, StackPanel parent, out ComboBox comboBox)
+        public Category(string name, string id, StackPanel parent, string character, out ComboBox comboBox)
         {
             this.name = name;
             this.id = id;
             comboBox = InitComboBox(parent);
             this.comboBox = comboBox;
             this.order = 0;
+            this.character = character;
         }
 
-        public Category(string name, string id, int offset, int size, int order, StackPanel parent)
+        public Category(string name, string id, int offset, int size, int order, StackPanel parent, string character)
         {
             this.name = name;
             this.id = id;
             this.order = order;
+            this.character = character;
             HasOffset = true;
 
             chunks = new CategoryChunk[1];
@@ -60,13 +89,14 @@ namespace SF_PlayerCommonMergeTool
             comboBox = InitComboBox(parent);
         }
 
-        public Category(string name, string id, int order, StackPanel? parent, params CategoryChunk[] chunks)
+        public Category(string name, string id, int order, StackPanel? parent, string character, params CategoryChunk[] chunks)
         {
             this.name = name;
             this.id = id;
             this.order = order;
             HasOffset = true;
             this.chunks = chunks;
+            this.character = character;
 
             if (parent != null)
             {
@@ -100,6 +130,14 @@ namespace SF_PlayerCommonMergeTool
             parent.Children.Add(panel);
 
             return comboBox;
+        }
+
+        public void DeserializeAllChunkValues()
+        {
+            foreach (var chunk in chunks)
+            {
+                chunk.DeserializeHex();
+            }
         }
 
         public override string ToString()
