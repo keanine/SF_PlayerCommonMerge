@@ -60,6 +60,7 @@ namespace SF_PlayerCommonMergeTool
         [JsonInclude] public CategoryChunk[] chunks;
         [JsonInclude] public int order;
         public ComboBox comboBox;
+        [JsonInclude] public int format;
 
         [JsonIgnore] public bool HasOffset { get; private set; }
 
@@ -68,27 +69,29 @@ namespace SF_PlayerCommonMergeTool
 
         }
 
-        public Category(string name, string id, string character)
+        public Category(string name, string id, string character, int format)
         {
             this.name = name;
             this.id = id;
             this.order = 0;
             this.character = character;
+            this.format = format;
         }
 
-        public Category(string name, string id, int offset, int size, int order, string character)
+        public Category(string name, string id, int offset, int size, int order, string character, int format)
         {
             this.name = name;
             this.id = id;
             this.order = order;
             this.character = character;
             HasOffset = true;
+            this.format = format;
 
             chunks = new CategoryChunk[1];
             chunks[0] = new CategoryChunk(offset, size, "");
         }
 
-        public Category(string name, string id, int order, string character, params CategoryChunk[] chunks)
+        public Category(string name, string id, int order, string character, int format, params CategoryChunk[] chunks)
         {
             this.name = name;
             this.id = id;
@@ -96,6 +99,7 @@ namespace SF_PlayerCommonMergeTool
             HasOffset = true;
             this.chunks = chunks;
             this.character = character;
+            this.format = format;
         }
 
         public ComboBox InitComboBox(StackPanel parent)

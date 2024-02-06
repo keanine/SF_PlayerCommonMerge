@@ -25,6 +25,9 @@ namespace SF_PlayerCommonMergeTool
         public string nameOfGameUpdate = "1.41";
         public static string NameOfGameUpdate { get { return instance.nameOfGameUpdate; } }
 
+        public int addonFormat = 1;
+        public static int AddonFormat { get { return instance.addonFormat; } }
+
 
 
         public bool logDebugInformation { get; set; }

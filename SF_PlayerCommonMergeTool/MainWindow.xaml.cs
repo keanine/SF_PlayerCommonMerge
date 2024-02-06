@@ -212,6 +212,10 @@ ConfigSchemaFile=""""";
 
                         Environment.Exit(1);
                     }
+                    else
+                    {
+                        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() => SetTitleUpdateMessage("update available")));
+                    }
                 }
                 else
                 {
@@ -259,15 +263,15 @@ ConfigSchemaFile=""""";
             // Sonic
             Character character = characters[Characters.Sonic];
 
-            Category sonicCyloop = new Category("Cyloop", "sonic_cyloop", 6, character.name,
+            Category sonicCyloop = new Category("Cyloop", "sonic_cyloop", 6, character.name, Preferences.AddonFormat,
                 new CategoryChunk(0x61F8, 0x1460, "Cyloop Effect"));
             SerializeCategory(sonicCyloop);
 
-            Category sonicParry = new Category("Parry", "sonic_parry", 7, character.name,
+            Category sonicParry = new Category("Parry", "sonic_parry", 7, character.name, Preferences.AddonFormat,
                 new CategoryChunk(0x89D8, 0x60, "Parry"));
             SerializeCategory(sonicParry);
 
-            Category sonicSpinDash = new Category("Spin Dash", "sonic_spindash", 8, character.name,
+            Category sonicSpinDash = new Category("Spin Dash", "sonic_spindash", 8, character.name, Preferences.AddonFormat,
                 new CategoryChunk(0x8D10, 0xF8, "Open Zone 3D"),
                 new CategoryChunk(0x9DA0, 0xF8, "Cyberspace 3D"),
                 new CategoryChunk(0xAC80, 0xF8, "Cyberspace 2D"));
@@ -277,16 +281,16 @@ ConfigSchemaFile=""""";
             // Tails
             character = characters[Characters.Tails];
 
-            Category tailsCyloop = new Category("Cyloop", "tails_cyloop", 5, character.name,
+            Category tailsCyloop = new Category("Cyloop", "tails_cyloop", 5, character.name, Preferences.AddonFormat,
                 new CategoryChunk(0x4E98, 0x1460, "Cyloop Effect"));
             SerializeCategory(tailsCyloop);
 
-            Category tailsParry = new Category("Parry", "tails_parry", 6, character.name,
+            Category tailsParry = new Category("Parry", "tails_parry", 6, character.name, Preferences.AddonFormat,
                 new CategoryChunk(0x6AF8, 0x60, "Parry"),
                 new CategoryChunk(0x4E90, 0x8, "Parry Debuff"));
             SerializeCategory(tailsParry);
 
-            Category tailsSpinDash = new Category("Spin Dash", "tails_spindash", 7, character.name,
+            Category tailsSpinDash = new Category("Spin Dash", "tails_spindash", 7, character.name, Preferences.AddonFormat,
                 new CategoryChunk(0x6E58, 0xF8, "3D Gameplay"),
                 new CategoryChunk(0x7CB8, 0xF8, "2D Gameplay"));
             SerializeCategory(tailsSpinDash);
@@ -295,16 +299,16 @@ ConfigSchemaFile=""""";
             // Knuckles
             character = characters[Characters.Knuckles];
 
-            Category knucklesCyloop = new Category("Cyloop", "knuckles_cyloop", 5, character.name,
+            Category knucklesCyloop = new Category("Cyloop", "knuckles_cyloop", 5, character.name, Preferences.AddonFormat,
                 new CategoryChunk(0x4F78, 0x1460, "Cyloop Effect"));
             SerializeCategory(knucklesCyloop);
 
-            Category knucklesParry = new Category("Parry", "knuckles_parry", 6, character.name,
+            Category knucklesParry = new Category("Parry", "knuckles_parry", 6, character.name, Preferences.AddonFormat,
                 new CategoryChunk(0x6BD8, 0x60, "Parry"),
                 new CategoryChunk(0x4F70, 0x8, "Parry Debuff"));
             SerializeCategory(knucklesParry);
 
-            Category knucklesSpinDash = new Category("Spin Dash", "knuckles_spindash", 7, character.name,
+            Category knucklesSpinDash = new Category("Spin Dash", "knuckles_spindash", 7, character.name, Preferences.AddonFormat,
                 new CategoryChunk(0x6EF8, 0xF8, "3D Gameplay"),
                 new CategoryChunk(0x7CB8, 0xF8, "2D Gameplay"));
             SerializeCategory(knucklesSpinDash);
@@ -313,16 +317,16 @@ ConfigSchemaFile=""""";
             // Amy
             character = characters[Characters.Amy];
 
-            Category amyCyloop = new Category("Cyloop", "amy_cyloop", 5, character.name,
+            Category amyCyloop = new Category("Cyloop", "amy_cyloop", 5, character.name, Preferences.AddonFormat,
                 new CategoryChunk(0x4EA0, 0x1460, "Cyloop Effect"));
             SerializeCategory(amyCyloop);
 
-            Category amyParry = new Category("Parry", "amy_parry", 6, character.name,
+            Category amyParry = new Category("Parry", "amy_parry", 6, character.name, Preferences.AddonFormat,
                 new CategoryChunk(0x6AF8, 0x60, "Parry"),
                 new CategoryChunk(0x4E90, 0x8, "Parry Debuff"));
             SerializeCategory(amyParry);
 
-            Category amySpinDash = new Category("Spin Dash", "amy_spindash", 7, character.name,
+            Category amySpinDash = new Category("Spin Dash", "amy_spindash", 7, character.name, Preferences.AddonFormat,
                 new CategoryChunk(0x6F38, 0xF8, "3D Gameplay"),
                 new CategoryChunk(0x7E18, 0xF8, "2D Gameplay"));
             SerializeCategory(amySpinDash);
@@ -354,32 +358,32 @@ ConfigSchemaFile=""""";
 
                 // Sonic //
                 selectedCharacter = characters[Characters.Sonic];
-                selectedCharacter.AddCategory("Open Zone 3D Physics", "sonic_openzone", 0x81E0, 0xEE0, 1);
-                selectedCharacter.AddCategory("Cyberspace 3D Physics", "sonic_cyber3d", 0x9270, 0xEE0, 2);
-                selectedCharacter.AddCategory("2D Physics", "sonic_cyber2d", 0xA150, 0xEE0, 3);
-                selectedCharacter.AddCategory("Water Physics", "sonic_water", 0x90C0, 0x1A8, 4);
-                selectedCharacter.AddCategory("Combat & Misc", "sonic_gameplay", 0x40, 0x81A0, 5);
+                selectedCharacter.AddCategory("Open Zone 3D Physics", "sonic_openzone", 0x81E0, 0xEE0, 1, Preferences.AddonFormat);
+                selectedCharacter.AddCategory("Cyberspace 3D Physics", "sonic_cyber3d", 0x9270, 0xEE0, 2, Preferences.AddonFormat);
+                selectedCharacter.AddCategory("2D Physics", "sonic_cyber2d", 0xA150, 0xEE0, 3, Preferences.AddonFormat);
+                selectedCharacter.AddCategory("Water Physics", "sonic_water", 0x90C0, 0x1A8, 4, Preferences.AddonFormat);
+                selectedCharacter.AddCategory("Combat & Misc", "sonic_gameplay", 0x40, 0x81A0, 5, Preferences.AddonFormat);
 
                 // Tails //
                 selectedCharacter = characters[Characters.Tails];
-                selectedCharacter.AddCategory("3D Physics", "tails_openzone", 0x6300, 0xCB0, 1);
-                selectedCharacter.AddCategory("2D Physics", "tails_cyber2d", 0x7160, 0xCB0, 2);
-                selectedCharacter.AddCategory("Water Physics", "tails_water", 0x6FB0, 0x1A8, 3);
-                selectedCharacter.AddCategory("Combat & Misc", "tails_gameplay", 0x40, 0x62C0, 4);
+                selectedCharacter.AddCategory("3D Physics", "tails_openzone", 0x6300, 0xCB0, 1, Preferences.AddonFormat);
+                selectedCharacter.AddCategory("2D Physics", "tails_cyber2d", 0x7160, 0xCB0, 2, Preferences.AddonFormat);
+                selectedCharacter.AddCategory("Water Physics", "tails_water", 0x6FB0, 0x1A8, 3, Preferences.AddonFormat);
+                selectedCharacter.AddCategory("Combat & Misc", "tails_gameplay", 0x40, 0x62C0, 4, Preferences.AddonFormat);
 
                 // Knuckles //
                 selectedCharacter = characters[Characters.Knuckles];
-                selectedCharacter.AddCategory("3D Physics", "knuckles_openzone", 0x63E0, 0xC10, 1);
-                selectedCharacter.AddCategory("2D Physics", "knuckles_cyber2d", 0x71A0, 0xC10, 2);
-                selectedCharacter.AddCategory("Water Physics", "knuckles_water", 0x6FF0, 0x1A8, 3);
-                selectedCharacter.AddCategory("Combat & Misc", "knuckles_gameplay", 0x40, 0x63A0, 4);
+                selectedCharacter.AddCategory("3D Physics", "knuckles_openzone", 0x63E0, 0xC10, 1, Preferences.AddonFormat);
+                selectedCharacter.AddCategory("2D Physics", "knuckles_cyber2d", 0x71A0, 0xC10, 2, Preferences.AddonFormat);
+                selectedCharacter.AddCategory("Water Physics", "knuckles_water", 0x6FF0, 0x1A8, 3, Preferences.AddonFormat);
+                selectedCharacter.AddCategory("Combat & Misc", "knuckles_gameplay", 0x40, 0x63A0, 4, Preferences.AddonFormat);
 
                 // Amy //
                 selectedCharacter = characters[Characters.Amy];
-                selectedCharacter.AddCategory("3D Physics", "amy_openzone", 0x6300, 0xD30, 1);
-                selectedCharacter.AddCategory("2D Physics", "amy_cyber2d", 0x71E0, 0xD30, 2);
-                selectedCharacter.AddCategory("Water Physics", "amy_water", 0x7030, 0x1A8, 3);
-                selectedCharacter.AddCategory("Combat & Misc", "amy_gameplay", 0x40, 0x62C0, 4);
+                selectedCharacter.AddCategory("3D Physics", "amy_openzone", 0x6300, 0xD30, 1, Preferences.AddonFormat);
+                selectedCharacter.AddCategory("2D Physics", "amy_cyber2d", 0x71E0, 0xD30, 2, Preferences.AddonFormat);
+                selectedCharacter.AddCategory("Water Physics", "amy_water", 0x7030, 0x1A8, 3, Preferences.AddonFormat);
+                selectedCharacter.AddCategory("Combat & Misc", "amy_gameplay", 0x40, 0x62C0, 4, Preferences.AddonFormat);
 
                 CreateBuiltinAddonFiles();
 
@@ -523,7 +527,6 @@ ConfigSchemaFile=""""";
         {
             string jsonCategory = File.ReadAllText(fileName);
             Category category = (Category)JsonSerializer.Deserialize(jsonCategory, typeof(Category));
-            category = new Category(category.name, category.id, category.order, character.name, category.chunks);
             category.InitComboBox(character.stackPanel);
             category.DeserializeAllChunkValues();
             character.addonCategories.Add(category);
@@ -532,7 +535,6 @@ ConfigSchemaFile=""""";
         {
             string jsonCategory = File.ReadAllText(fileName);
             Category category = (Category)JsonSerializer.Deserialize(jsonCategory, typeof(Category));
-            category = new Category(category.name, category.id, category.order, character.name, category.chunks);
 
             List<StoredData.CategorySelection> addonSelections;
             
@@ -618,189 +620,21 @@ ConfigSchemaFile=""""";
         private void MergeButton_Click(object sender, RoutedEventArgs e)
         {
             NewMerge(characters[Characters.Sonic]);
-            //Merge(characters[Characters.Sonic], "player_common");
         }
 
         private void MergeButtonTails_Click(object sender, RoutedEventArgs e)
         {
             NewMerge(characters[Characters.Tails]);
-            //Merge(characters[Characters.Tails], "tails_common");
         }
 
         private void MergeButtonKnuckles_Click(object sender, RoutedEventArgs e)
         {
             NewMerge(characters[Characters.Knuckles]);
-            //Merge(characters[Characters.Knuckles], "knuckles_common");
         }
 
         private void MergeButtonAmy_Click(object sender, RoutedEventArgs e)
         {
             NewMerge(characters[Characters.Amy]);
-            //Merge(characters[Characters.Amy], "amy_common");
-        }
-
-        private void Merge(Character character, string playerCommonRFL)
-        {
-            if (storedData.installLocation != string.Empty)
-            {
-                string pacFileName = "playercommon";
-
-                List<Category> mergeCategories = new List<Category>(character.categories);
-                mergeCategories.AddRange(character.addonCategories);
-
-                Debugging.WriteToLog("Running Merge for " + character.name);
-
-                string modFolder = modsFolder + "Merged" + character.name;
-                string newPacFolder = modFolder + "\\raw\\character\\";
-
-                if (!Directory.Exists(newPacFolder))
-                {
-                    Directory.CreateDirectory(newPacFolder);
-                }
-
-                if (!Directory.Exists(workspace))
-                {
-                    Directory.CreateDirectory(workspace);
-                }
-
-                Debugging.WriteToLog($"Copying vanilla {character.name} file");
-
-                using (var md5 = System.Security.Cryptography.MD5.Create())
-                {
-                    using (var stream = File.OpenRead(storedData.installLocation + "\\image\\x64\\raw\\character\\" + pacFileName + ".pac"))
-                    {
-                        var hash = md5.ComputeHash(stream);
-                        if (Preferences.LatestPlayercommonHash != BitConverter.ToString(hash).Replace("-", string.Empty).ToLowerInvariant())
-                        {
-                            MessageBox.Show($"The {pacFileName}.pac in \"" + storedData.installLocation + "\\image\\x64\\raw\\character\\\"" + " is not for the correct version of Sonic Frontiers or has been modified. Please make sure your game is up to date with v" + Preferences.NameOfGameUpdate + ". The merge operation has been cancelled.", "Error");
-                            return;
-                        }
-                    }
-                }
-
-                File.Copy(storedData.installLocation + $"\\image\\x64\\raw\\character\\{pacFileName}.pac", workspace + $"{pacFileName}_vanilla.pac", true);
-
-                Debugging.WriteToLog($"Extracting: \"{workspace}{pacFileName}_vanilla.pac\" to \"{workspace}out_vanilla\"");
-                RunCMD("tools/HedgeArcPack.exe", $"\"{workspace}{pacFileName}_vanilla.pac\"", $"\"{workspace}out_vanilla\"", "-E", "-T=rangers");
-
-                if (Preferences.AllowUpdatingPac)
-                {
-                    if (!File.Exists("tools/PlayerCommonUpdaterV2.exe"))
-                    {
-                        MessageBoxResult result = MessageBox.Show("tools/PlayerCommonUpdaterV2.exe could not be found. This could be because of a false-positive virus warning that has removed the file. Pac updating will be disabled until you restart the tool and restore the file. Continue?", "Warning", MessageBoxButton.OKCancel);
-                        
-                        if (result == MessageBoxResult.Cancel)
-                        {
-                            return;
-                        }
-                        else
-                        {
-                            Preferences.AllowUpdatingPac = false;
-                        }
-                    }
-                }
-                else
-                {
-                    Debugging.WriteToLog(".pac updates disabled in Preferences");
-                }
-
-                foreach (var category in mergeCategories)
-                {
-                    if (category.HasOffset && category.comboBox.SelectedIndex > 0)
-                    {
-                        Mod mod = mods[category.comboBox.SelectedIndex - 1];
-                        string copyOfPac = workspace + $"{pacFileName}_" + category.id + ".pac";
-
-                        if (Preferences.AllowUpdatingPac)
-                        {
-                            UpdatePac(mod.path + $"\\raw\\character\\{pacFileName}.pac", copyOfPac);
-                        }
-
-                        Debugging.WriteToLog($"Extracting: \"{copyOfPac}\" to \"{workspace}out_{category.id}\"");
-                        RunCMD("tools/HedgeArcPack.exe", $"\"{copyOfPac}\"", $"\"{workspace}out_{category.id}\"", "-E", "-T=rangers");
-
-                    }
-                    else if (category.comboBox.SelectedIndex == 0)
-                    {
-                        Debugging.WriteToLog($"Extracting: \"{workspace}{pacFileName}_vanilla.pac\" to \"{workspace}out_{category.id}\"");
-                        RunCMD("tools/HedgeArcPack.exe", $"\"{workspace}{pacFileName}_vanilla.pac\"", $"\"{workspace}out_{category.id}\"", "-E", "-T=rangers");
-                    }
-                }
-                Debugging.WriteToLog($"Extracted all category files");
-
-                CleanUpPlayerCommonUpdater();
-
-                Debugging.WriteToLog($"Read vanilla RFL");
-                string rfl = $"{workspace}\\out_vanilla\\{playerCommonRFL}.rfl";
-                byte[] file = File.ReadAllBytes(rfl);
-                Debugging.WriteToLog($"Read vanilla RFL successfully");
-
-                foreach (var category in mergeCategories)
-                {
-                    if (category.HasOffset && category.comboBox.SelectedIndex >= 0)
-                    {
-                        Debugging.WriteToLog($"Merging bytes from {category.id} RFL");
-                        byte[] categoryFile = File.ReadAllBytes($"{workspace}\\out_{category.id}\\{playerCommonRFL}.rfl");
-
-                        foreach (var chunk in category.chunks)
-                        {
-                            byte[] data = categoryFile.ToList().GetRange(chunk.offsetValue, chunk.sizeValue).ToArray();
-
-                            for (int i = 0; i < chunk.sizeValue; i++)
-                            {
-                                file[i + chunk.offsetValue] = data[i];
-                            }
-                        }
-                        Debugging.WriteToLog($"Successfully merged bytes from {category.id} RFL");
-                    }
-                }
-
-                Debugging.WriteToLog($"Writing all merged bytes to output RFL");
-                File.WriteAllBytes(rfl, file);
-
-                Debugging.WriteToLog($"Packing merged RFL");
-                RunCMD("tools/HedgeArcPack.exe", $"\"{workspace}out_vanilla\"", $"\"{workspace}out_vanilla.pac\"", "-P", "-T=rangers");
-                Debugging.WriteToLog($"Successfully packed RFL");
-
-                File.Move($"{workspace}\\out_vanilla.pac", newPacFolder + $"{pacFileName}.pac", true);
-                File.WriteAllText(modFolder + "\\mod.ini", iniTemplate);
-                Debugging.WriteToLog($"Created merged mod");
-
-                ClearDirectory(new DirectoryInfo(workspace));
-                Directory.Delete(workspace);
-                Debugging.WriteToLog($"Workspace cleaned up");
-
-
-                storedData.categorySelectionsSonic.Clear();
-                
-                foreach (var category in mergeCategories)
-                {
-                    Mod mod = (category.comboBox.SelectedItem as Mod);
-
-                    if (mod != null)
-                    {
-                        switch (character.name)
-                        {
-                            case "Sonic":
-                                storedData.categorySelectionsSonic.Add(new StoredData.CategorySelection(category.id, (category.comboBox.SelectedItem as Mod).title));
-                                break;
-                            case "Tails":
-                                storedData.categorySelectionsTails.Add(new StoredData.CategorySelection(category.id, (category.comboBox.SelectedItem as Mod).title));
-                                break;
-                            case "Knuckles":
-                                storedData.categorySelectionsKnuckles.Add(new StoredData.CategorySelection(category.id, (category.comboBox.SelectedItem as Mod).title));
-                                break;
-                            case "Amy":
-                                storedData.categorySelectionsAmy.Add(new StoredData.CategorySelection(category.id, (category.comboBox.SelectedItem as Mod).title));
-                                break;
-                        }
-                    }
-                }
-                SaveStoredData();
-
-                Debugging.WriteToLog($"Merge Successful!");
-                MessageBox.Show($"You can now close this tool, open Hedge Mod Manager and enable the newly generated mod \"Merged {character.name}\"", "Merge complete!");
-            }
         }
 
         private string GetMD5(string pac)

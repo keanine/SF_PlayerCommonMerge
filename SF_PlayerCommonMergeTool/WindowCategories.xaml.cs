@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -76,11 +77,11 @@ namespace SF_PlayerCommonMergeTool
             }
 
         }
+
         private void LoadAddonCategoryFromFile(string fileName, Character character, StackPanel panel)
         {
             string jsonCategory = File.ReadAllText(fileName);
             Category category = (Category)JsonSerializer.Deserialize(jsonCategory, typeof(Category));
-            category = new Category(category.name, category.id, category.order, character.name, category.chunks);
             category.DeserializeAllChunkValues();
 
             List<StoredData.CategorySelection> addonSelections;
@@ -178,5 +179,46 @@ namespace SF_PlayerCommonMergeTool
 
             addonCategories.Add(checkBox, category);
         }
+
+
+        //private void DownloadOfficialAddonCategories(bool wait)
+        //{
+        //    //Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() => SetTitleUpdateMessage("checking for updates")));
+        //    try
+        //    {
+
+
+
+        //        if (AutoUpdaterLib.Updater.CheckForUpdates(applicationName, selectedUpdateServerURL, versionFileName))
+        //        {
+        //            MessageBoxResult result = MessageBox.Show("A new update has been found. Do you want to update?", "Update Found", MessageBoxButton.YesNo, MessageBoxImage.Information);
+
+        //            if (result == MessageBoxResult.Yes)
+        //            {
+        //                var proc1 = new ProcessStartInfo();
+        //                proc1.UseShellExecute = true;
+        //                proc1.CreateNoWindow = false;
+        //                proc1.WorkingDirectory = @"";
+        //                proc1.Arguments = $"\"autoupdater.dll\" \"{applicationName}\" \"{selectedUpdateServerURL}\" \"{versionFileName}\" \"{updateListFileName}\" \"{executableFileName}\"";
+        //                proc1.FileName = "dotnet.exe";
+        //                Process.Start(proc1);
+
+        //                Environment.Exit(1);
+        //            }
+        //            else
+        //            {
+        //                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() => SetTitleUpdateMessage("update available")));
+        //            }
+        //        }
+        //        else
+        //        {
+        //            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() => SetTitleUpdateMessage("up-to-date")));
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        MessageBox.Show(e.Message, "Error");
+        //    }
+        //}
     }
 }

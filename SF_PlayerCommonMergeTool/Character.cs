@@ -29,7 +29,7 @@ namespace SF_PlayerCommonMergeTool
 
             public void InitSetAllComboBox(string id)
             {
-                Category category = new Category("Set All", id, name);
+                Category category = new Category("Set All", id, name, Preferences.AddonFormat);
                 categories.Add(category);
 
                 SetAllComboBox = category.InitComboBox(stackPanel);
@@ -52,9 +52,9 @@ namespace SF_PlayerCommonMergeTool
                 }
             }
 
-            public void AddCategory(string name, string id, int offset, int size, int order)
+            public void AddCategory(string name, string id, int offset, int size, int order, int format)
             {
-                Category category = new Category(name, id, offset, size, order, this.name);
+                Category category = new Category(name, id, offset, size, order, this.name, format);
                 category.InitComboBox(stackPanel);
                 categories.Add(category);
             }
