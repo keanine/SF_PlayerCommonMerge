@@ -16,13 +16,13 @@ namespace SF_PlayerCommonMergeTool
 
         public static string appData = string.Empty;
 
-        public float toolVersion = 1.5f;
+        public float toolVersion = 1.9f;
         public static float ToolVersion { get { return instance.toolVersion; } }
 
-        public string latestPlayercommonHash = "cfb57c2bd3b69b583d77539af5b7fcf4";
+        public string latestPlayercommonHash = "8d18390d4092f44556cf548f32b8f70f";
         public static string LatestPlayercommonHash { get { return instance.latestPlayercommonHash; } }
 
-        public string nameOfGameUpdate = "Update 3";
+        public string nameOfGameUpdate = "1.41";
         public static string NameOfGameUpdate { get { return instance.nameOfGameUpdate; } }
 
 

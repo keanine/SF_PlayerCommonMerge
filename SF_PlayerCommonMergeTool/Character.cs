@@ -14,10 +14,17 @@ namespace SF_PlayerCommonMergeTool
             public StackPanel stackPanel;
             public List<Category> categories = new List<Category>();
             public List<Category> addonCategories = new List<Category>();
+            public string rflName;
 
             public Character()
             {
 
+            }
+
+            public void Init(StackPanel stackPanel, string rflName)
+            {
+                this.stackPanel = stackPanel;
+                this.rflName = rflName;
             }
 
             public void InitSetAllComboBox(string id)

@@ -10,20 +10,31 @@ namespace SF_PlayerCommonMergeTool
     public class StoredData
     {
         public string installLocation { get; set; }
-        public List<CategorySelection> categorySelection { get; set; }
-        public List<CategorySelection> categorySelectionTails { get; set; }
-        public List<CategorySelection> categorySelectionKnuckles { get; set; }
-        public List<CategorySelection> categorySelectionAmy { get; set; }
+        public List<CategorySelection> categorySelectionsSonic { get; set; }
+        public List<CategorySelection> categorySelectionsTails { get; set; }
+        public List<CategorySelection> categorySelectionsKnuckles { get; set; }
+        public List<CategorySelection> categorySelectionsAmy { get; set; }
+
+        public List<CategorySelection> addonCategorySelectionsSonic { get; set; }
+        public List<CategorySelection> addonCategorySelectionsTails { get; set; }
+        public List<CategorySelection> addonCategorySelectionsKnuckles { get; set; }
+        public List<CategorySelection> addonCategorySelectionsAmy { get; set; }
 
         public StoredData()
         {
             installLocation = string.Empty;
-            categorySelection = new List<CategorySelection>();
-            categorySelectionTails = new List<CategorySelection>();
-            categorySelectionKnuckles = new List<CategorySelection>();
-            categorySelectionAmy = new List<CategorySelection>();
+            categorySelectionsSonic = new List<CategorySelection>();
+            categorySelectionsTails = new List<CategorySelection>();
+            categorySelectionsKnuckles = new List<CategorySelection>();
+            categorySelectionsAmy = new List<CategorySelection>();
+
+            addonCategorySelectionsSonic = new List<CategorySelection>();
+            addonCategorySelectionsTails = new List<CategorySelection>();
+            addonCategorySelectionsKnuckles = new List<CategorySelection>();
+            addonCategorySelectionsAmy = new List<CategorySelection>();
         }
 
+        [System.Serializable]
         public struct CategorySelection
         {
             public string id { get; set; }

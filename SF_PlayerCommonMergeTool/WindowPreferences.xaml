@@ -25,5 +25,6 @@
         </ScrollViewer>
         <Button x:Name="btnCancel"  Content="Cancel" HorizontalAlignment="Left" Margin="10,0,0,10" Width="91" Height="20" VerticalAlignment="Bottom" Click="btnCancel_Click"/>
         <Button x:Name="btnApply" Content="Apply" HorizontalAlignment="Left" Margin="106,0,0,10" Width="91" Height="20" VerticalAlignment="Bottom" Click="btnApply_Click"/>
+        <Button IsEnabled="False" x:Name="btnComputeHash" Content="MD5" Margin="0,0,10,10" Height="20" VerticalAlignment="Bottom" Click="btnComputeHash_Click" HorizontalAlignment="Right" Width="91"/>
     </Grid>
 </Window>

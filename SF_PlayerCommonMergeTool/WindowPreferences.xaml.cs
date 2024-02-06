@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -43,6 +44,19 @@ namespace SF_PlayerCommonMergeTool
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        private void btnComputeHash_Click(object sender, RoutedEventArgs e)
+        {
+            using (var md5 = System.Security.Cryptography.MD5.Create())
+            {
+                using (var stream = File.OpenRead((Application.Current.MainWindow as MainWindow).storedData.installLocation + "\\image\\x64\\raw\\character\\playercommon.pac"))
+                {
+                    var hash = md5.ComputeHash(stream);
+                    string hashStr = BitConverter.ToString(hash).Replace("-", string.Empty).ToLowerInvariant();
+                    MessageBox.Show(hashStr, "Hash");
+                }
+            }
         }
     }
 }

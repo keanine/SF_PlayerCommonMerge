@@ -66,32 +66,61 @@ namespace SF_PlayerCommonMergeTool
             foreach (var character in mainWindow.characters.Values)
             {
                 StackPanel panel = GetCharacterPanel(character);
+                character.addonCategories.Clear();
 
                 string directory = Path.Combine(Preferences.appData, "categories", character.name);
                 foreach (var file in Directory.GetFiles(directory))
                 {
-                    LoadCategoryFromFile(file, character, panel);
+                    LoadAddonCategoryFromFile(file, character, panel);
                 }
             }
 
         }
-
-        private void LoadCategoryFromFile(string fileName, Character character, StackPanel panel)
+        private void LoadAddonCategoryFromFile(string fileName, Character character, StackPanel panel)
         {
             string jsonCategory = File.ReadAllText(fileName);
             Category category = (Category)JsonSerializer.Deserialize(jsonCategory, typeof(Category));
             category = new Category(category.name, category.id, category.order, character.name, category.chunks);
             category.DeserializeAllChunkValues();
-            CreateCheckbox(panel, category);
-        }
 
+            List<StoredData.CategorySelection> addonSelections;
+
+            switch (character.name)
+            {
+                case "Tails":
+                    addonSelections = mainWindow.storedData.addonCategorySelectionsTails;
+                    break;
+                case "Knuckles":
+                    addonSelections = mainWindow.storedData.addonCategorySelectionsKnuckles;
+                    break;
+                case "Amy":
+                    addonSelections = mainWindow.storedData.addonCategorySelectionsAmy;
+                    break;
+                case "Sonic":
+                default:
+                    addonSelections = mainWindow.storedData.addonCategorySelectionsSonic;
+                    break;
+            }
+
+            bool isTicked = false;
+            foreach (var selection in addonSelections)
+            {
+                if (selection.id == category.id)
+                {
+                    isTicked = true;
+                    break;
+                }
+            }
+
+            CreateCheckbox(panel, category, isTicked);
+        }
         //private void LoadCategoryFromFile(string fileName, Character character, StackPanel panel)
         //{
         //    string jsonCategory = File.ReadAllText(fileName);
         //    Category category = (Category)JsonSerializer.Deserialize(jsonCategory, typeof(Category));
-        //    category = new Category(category.name, category.id, category.order, panel, character.name, category.chunks);
+        //    category = new Category(category.name, category.id, category.order, character.name, category.chunks);
         //    category.DeserializeAllChunkValues();
-        //    character.addonCategories.Add(category);
+        //    CreateCheckbox(panel, category);
         //}
 
         private void btnApply_Click(object sender, RoutedEventArgs e)
@@ -99,23 +128,29 @@ namespace SF_PlayerCommonMergeTool
             //Add all checked categories into MainWindow.addonCategories using category.order to sort them
             //Save addonCategories to json
 
-            foreach (var character in mainWindow.characters.Values)
+            MessageBoxResult result = MessageBox.Show("Any unmerged changes will be discarded, continue?", "Warning", MessageBoxButton.YesNo);
+
+            if (result == MessageBoxResult.Yes)
             {
-                StackPanel panel = GetCharacterPanel(character);
-                character.addonCategories.Clear();
-
-                foreach (var item in panel.Children)
+                foreach (var character in mainWindow.characters.Values)
                 {
-                    CheckBox categoryCheckbox = (CheckBox)item;
+                    StackPanel panel = GetCharacterPanel(character);
+                    character.addonCategories.Clear();
 
-                    if (categoryCheckbox.IsChecked == true)
+                    foreach (var item in panel.Children)
                     {
-                        character.addonCategories.Add(addonCategories[categoryCheckbox]);
+                        CheckBox categoryCheckbox = (CheckBox)item;
+
+                        if (categoryCheckbox.IsChecked == true)
+                        {
+                            character.addonCategories.Add(addonCategories[categoryCheckbox]);
+                        }
                     }
                 }
-            }
+                mainWindow.SaveAddonCategorySelections();
 
-            Close();
+                Close();
+            }
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
@@ -134,11 +169,11 @@ namespace SF_PlayerCommonMergeTool
             //Refresh StackPanel
         }
 
-        private void CreateCheckbox(StackPanel panel, Category category)
+        private void CreateCheckbox(StackPanel panel, Category category, bool isChecked)
         {
             CheckBox checkBox = new CheckBox();
             checkBox.Content = category.name;
-            checkBox.IsChecked = false;
+            checkBox.IsChecked = isChecked;
             panel.Children.Add(checkBox);
 
             addonCategories.Add(checkBox, category);
