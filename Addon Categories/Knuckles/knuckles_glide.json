@@ -1,0 +1,13 @@
+{
+  "name": "Glide",
+  "id": "knuckles_glide",
+  "character": "Knuckles",
+  "chunks": [
+    {
+      "comment": "???",
+      "offset": "0x7A90",
+      "size": "0x5C"
+    }
+  ],
+  "order": 8
+}

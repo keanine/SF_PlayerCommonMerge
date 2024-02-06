@@ -44,7 +44,7 @@
 
         <Button x:Name="btnApply" Content="Apply" Margin="0,0,10,10" HorizontalAlignment="Right" Width="76" Height="20" VerticalAlignment="Bottom" Click="btnApply_Click"/>
         <Button x:Name="btnCancel" Content="Cancel" Margin="0,0,91,10" HorizontalAlignment="Right" Width="76" Height="20" VerticalAlignment="Bottom" Click="btnCancel_Click"/>
-        <Button x:Name="btnDownload" Content="Download More" Margin="10,0,0,10" Height="20" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="106" Click="btnDownload_Click"/>
+        <Button IsEnabled="False" x:Name="btnDownload" Content="Download More" Margin="10,0,0,10" Height="20" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="106" Click="btnDownload_Click"/>
         <Button x:Name="btnOpenFolder" Content="Open Folder" Margin="121,0,0,10" Height="20" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="106" Click="btnOpenFolder_Click"/>
 
     </Grid>
