@@ -67,7 +67,6 @@ namespace SF_PlayerCommonMergeTool
             foreach (var character in mainWindow.characters.Values)
             {
                 StackPanel panel = GetCharacterPanel(character);
-                character.addonCategories.Clear();
 
                 string directory = Path.Combine(Preferences.appData, "categories", character.name);
                 foreach (var file in Directory.GetFiles(directory))
@@ -150,13 +149,13 @@ namespace SF_PlayerCommonMergeTool
                 }
                 mainWindow.SaveAddonCategorySelections();
 
-                Close();
+                DialogResult = true;
             }
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            Close();
+            DialogResult = false;
         }
 
         private void btnOpenFolder_Click(object sender, RoutedEventArgs e)

@@ -782,10 +782,12 @@ ConfigSchemaFile=""""";
             {
                 if (category.comboBox.SelectedIndex >= 0)
                 {
-                    if (category.HasOffset && File.Exists($"{workspace}\\out_{category.id}\\{characterRFL}.rfl"))
+                    string debuggingFile = $"{workspace}\\out_{category.id}\\{characterRFL}";
+                    bool exists = File.Exists(debuggingFile);
+                    if (category.HasOffset && File.Exists($"{workspace}\\out_{category.id}\\{characterRFL}"))
                     {
                         Debugging.WriteToLog($"Merging bytes from {category.id} RFL");
-                        byte[] categoryFile = File.ReadAllBytes($"{workspace}\\out_{category.id}\\{characterRFL}.rfl");
+                        byte[] categoryFile = File.ReadAllBytes($"{workspace}\\out_{category.id}\\{characterRFL}");
 
                         foreach (var chunk in category.chunks)
                         {
@@ -1042,9 +1044,12 @@ ConfigSchemaFile=""""";
         {
             WindowCategories categoryWindow = new WindowCategories();
             categoryWindow.Owner = this;
-            categoryWindow.ShowDialog();
 
-            Load(true);
+            if (categoryWindow.ShowDialog() == true)
+            {
+                Load(true);
+            }
+
         }
 
         private void mnuExit_Click(object sender, RoutedEventArgs e)
