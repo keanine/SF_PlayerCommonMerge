@@ -6,9 +6,9 @@
         xmlns:local="clr-namespace:SF_PlayerCommonMergeTool"
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner"
-        Title="Merge Tool Addon Categories" Height="450" Width="489">
+        Title="Merge Tool Addon Categories" Height="350" Width="489" MinHeight="300" MinWidth="489">
     <Grid>
-        <TabControl Margin="0,60,0,0" BorderThickness="0 1 0 0">
+        <TabControl Margin="0,69,0,0" BorderThickness="0 1 0 0">
             <TabItem Header="Sonic">
                 <Grid>
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,10,0,40">
@@ -44,8 +44,11 @@
 
         <Button x:Name="btnApply" Content="Apply" Margin="0,0,10,10" HorizontalAlignment="Right" Width="76" Height="20" VerticalAlignment="Bottom" Click="btnApply_Click"/>
         <Button x:Name="btnCancel" Content="Cancel" Margin="0,0,91,10" HorizontalAlignment="Right" Width="76" Height="20" VerticalAlignment="Bottom" Click="btnCancel_Click"/>
-        <Button IsEnabled="False" x:Name="btnDownload" Content="Download More" Margin="10,0,0,10" Height="20" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="106" Click="btnDownload_Click"/>
+        <Button x:Name="btnDownload" Content="Download More" Margin="10,0,0,10" Height="20" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="106" Click="btnDownload_Click"/>
         <Button x:Name="btnOpenFolder" Content="Open Folder" Margin="121,0,0,10" Height="20" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="106" Click="btnOpenFolder_Click"/>
+        <TextBlock Margin="10,10,10,0" TextWrapping="WrapWithOverflow" VerticalAlignment="Top" Height="54" >
+            Tick the boxes of any categories you would like to adjust. This allows finer control over the categories that are enabled by default. You can also download or create your own addon categories! Just place them in the folder and re-open this window.
+        </TextBlock>
 
     </Grid>
 </Window>

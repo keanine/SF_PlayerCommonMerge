@@ -66,7 +66,7 @@ namespace SF_PlayerCommonMergeTool
 
         public Category()
         {
-
+            this.HasOffset = true;
         }
 
         public Category(string name, string id, string character, int format)
@@ -76,6 +76,7 @@ namespace SF_PlayerCommonMergeTool
             this.order = 0;
             this.character = character;
             this.format = format;
+            this.HasOffset = false;
         }
 
         public Category(string name, string id, int offset, int size, int order, string character, int format)
@@ -84,7 +85,7 @@ namespace SF_PlayerCommonMergeTool
             this.id = id;
             this.order = order;
             this.character = character;
-            HasOffset = true;
+            this.HasOffset = true;
             this.format = format;
 
             chunks = new CategoryChunk[1];

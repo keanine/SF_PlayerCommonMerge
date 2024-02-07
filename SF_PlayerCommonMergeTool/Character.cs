@@ -58,6 +58,13 @@ namespace SF_PlayerCommonMergeTool
                 category.InitComboBox(stackPanel);
                 categories.Add(category);
             }
+
+            public void AddSpace()
+            {
+                TextBlock space = new TextBlock();
+                space.Height = 5;
+                stackPanel.Children.Add(space);
+            }
         }
     }
 }

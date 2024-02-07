@@ -9,9 +9,8 @@ using System.Diagnostics;
 
 using ComboBox = System.Windows.Controls.ComboBox;
 using Path = System.IO.Path;
-using System.Windows.Input;
-using static SF_PlayerCommonMergeTool.MainWindow;
-using System.Security.Policy;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace SF_PlayerCommonMergeTool
 {
@@ -166,8 +165,7 @@ ConfigSchemaFile=""""";
 
         private void SetTitleUpdateMessage(string message)
         {
-            //Window.GetWindow(this).Title = titleName + " v" + Preferences.ToolVersion.ToString("0.0") + " | Frontiers v1.41 | " + message;
-            Window.GetWindow(this).Title = $"{titleName} v{Preferences.ToolVersion.ToString("0.0")} | Frontiers v1.41 | {message}";
+            Title = $"{titleName} v{Preferences.ToolVersion.ToString("0.0")} | Frontiers v{Preferences.NameOfGameUpdate} | {message}";
         }
 
         private void CheckForUpdates(bool wait)
@@ -363,6 +361,7 @@ ConfigSchemaFile=""""";
                 selectedCharacter.AddCategory("2D Physics", "sonic_cyber2d", 0xA150, 0xEE0, 3, Preferences.AddonFormat);
                 selectedCharacter.AddCategory("Water Physics", "sonic_water", 0x90C0, 0x1A8, 4, Preferences.AddonFormat);
                 selectedCharacter.AddCategory("Combat & Misc", "sonic_gameplay", 0x40, 0x81A0, 5, Preferences.AddonFormat);
+                selectedCharacter.AddSpace();
 
                 // Tails //
                 selectedCharacter = characters[Characters.Tails];
@@ -370,6 +369,7 @@ ConfigSchemaFile=""""";
                 selectedCharacter.AddCategory("2D Physics", "tails_cyber2d", 0x7160, 0xCB0, 2, Preferences.AddonFormat);
                 selectedCharacter.AddCategory("Water Physics", "tails_water", 0x6FB0, 0x1A8, 3, Preferences.AddonFormat);
                 selectedCharacter.AddCategory("Combat & Misc", "tails_gameplay", 0x40, 0x62C0, 4, Preferences.AddonFormat);
+                selectedCharacter.AddSpace();
 
                 // Knuckles //
                 selectedCharacter = characters[Characters.Knuckles];
@@ -377,6 +377,7 @@ ConfigSchemaFile=""""";
                 selectedCharacter.AddCategory("2D Physics", "knuckles_cyber2d", 0x71A0, 0xC10, 2, Preferences.AddonFormat);
                 selectedCharacter.AddCategory("Water Physics", "knuckles_water", 0x6FF0, 0x1A8, 3, Preferences.AddonFormat);
                 selectedCharacter.AddCategory("Combat & Misc", "knuckles_gameplay", 0x40, 0x63A0, 4, Preferences.AddonFormat);
+                selectedCharacter.AddSpace();
 
                 // Amy //
                 selectedCharacter = characters[Characters.Amy];
@@ -384,6 +385,7 @@ ConfigSchemaFile=""""";
                 selectedCharacter.AddCategory("2D Physics", "amy_cyber2d", 0x71E0, 0xD30, 2, Preferences.AddonFormat);
                 selectedCharacter.AddCategory("Water Physics", "amy_water", 0x7030, 0x1A8, 3, Preferences.AddonFormat);
                 selectedCharacter.AddCategory("Combat & Misc", "amy_gameplay", 0x40, 0x62C0, 4, Preferences.AddonFormat);
+                selectedCharacter.AddSpace();
 
                 CreateBuiltinAddonFiles();
 
@@ -432,6 +434,19 @@ ConfigSchemaFile=""""";
                 LoadDropdownDefaults(characters[Characters.Tails], storedData.categorySelectionsTails);
                 LoadDropdownDefaults(characters[Characters.Knuckles], storedData.categorySelectionsKnuckles);
                 LoadDropdownDefaults(characters[Characters.Amy], storedData.categorySelectionsAmy);
+
+                foreach (var character in characters.Values)
+                {
+                    Label label = new Label();
+                    label.Content = "More categories...";
+                    label.HorizontalAlignment = HorizontalAlignment.Center;
+                    label.Padding = new Thickness(0);
+                    label.Height = 18;
+                    label.Foreground = new SolidColorBrush(Color.FromRgb(50, 50, 50));
+                    label.MouseLeftButtonDown += Label_MouseLeftButtonDown;
+                    character.stackPanel.Children.Add(label);
+                }
+
                 Debugging.WriteToLog("Finished Loading");
             }
         }
@@ -619,22 +634,22 @@ ConfigSchemaFile=""""";
 
         private void MergeButton_Click(object sender, RoutedEventArgs e)
         {
-            NewMerge(characters[Characters.Sonic]);
+            Merge(characters[Characters.Sonic]);
         }
 
         private void MergeButtonTails_Click(object sender, RoutedEventArgs e)
         {
-            NewMerge(characters[Characters.Tails]);
+            Merge(characters[Characters.Tails]);
         }
 
         private void MergeButtonKnuckles_Click(object sender, RoutedEventArgs e)
         {
-            NewMerge(characters[Characters.Knuckles]);
+            Merge(characters[Characters.Knuckles]);
         }
 
         private void MergeButtonAmy_Click(object sender, RoutedEventArgs e)
         {
-            NewMerge(characters[Characters.Amy]);
+            Merge(characters[Characters.Amy]);
         }
 
         private string GetMD5(string pac)
@@ -743,7 +758,7 @@ ConfigSchemaFile=""""";
             }
         }
 
-        private void NewMerge(Character character)
+        private void Merge(Character character)
         {
             // Get the vanilla file for the current character, and the modded files for the other characters
             string vanillaDirectory = Path.Combine(Preferences.appData, "vanilla_files");
@@ -862,7 +877,8 @@ ConfigSchemaFile=""""";
             SaveStoredData();
 
             Debugging.WriteToLog($"Merge Successful!");
-            MessageBox.Show($"You can now close this tool, open Hedge Mod Manager and enable the newly generated mod \"{modName}\"", "Merge complete!");
+            MessageBox.Show($"You can now open Hedge Mod Manager and enable the newly generated mod \"{modName}\"."
+                + $"\n\nEnsure you put {modName} at the top of the load order, and keep the mods it uses enabled for best compatibility with more complex mods. You may now close this tool.", "Merge complete!");
         }
 
         public void SaveAddonCategorySelections()
@@ -999,6 +1015,17 @@ ConfigSchemaFile=""""";
             }
         }
 
+        private void OpenCategoriesWindow()
+        {
+            WindowCategories categoryWindow = new WindowCategories();
+            categoryWindow.Owner = this;
+
+            if (categoryWindow.ShowDialog() == true)
+            {
+                Load(true);
+            }
+        }
+
         private void RefreshStackPanels()
         {
             foreach (Character character in characters.Values)
@@ -1042,14 +1069,7 @@ ConfigSchemaFile=""""";
 
         private void mnuCategories_Click(object sender, RoutedEventArgs e)
         {
-            WindowCategories categoryWindow = new WindowCategories();
-            categoryWindow.Owner = this;
-
-            if (categoryWindow.ShowDialog() == true)
-            {
-                Load(true);
-            }
-
+            OpenCategoriesWindow();
         }
 
         private void mnuExit_Click(object sender, RoutedEventArgs e)
@@ -1070,9 +1090,36 @@ ConfigSchemaFile=""""";
 
         private void mnuAbout_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Merge Tool created by Keanine.\n" +
-                "HedgeArcPack created by Radfordhound.\n" +
-                "Update Tool created by Blurro.", "About");
+            string[] credits =
+            {
+                "Merge Tool created by Keanine.",
+                "HedgeArcPack created by Radfordhound.",
+                //"Update Tool created by Blurro.",
+            };
+
+            string message = $"A tool for merging various physics mods for Sonic Frontiers v{Preferences.NameOfGameUpdate}.\n\n";
+            foreach (string credit in credits)
+            {
+                message += credit + "\n";
+            }
+            MessageBox.Show(message, "About");
+        }
+
+        private void Label_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            OpenCategoriesWindow();
+        }
+
+        private void mnuSrc_Click(object sender, RoutedEventArgs e)
+        {
+            string url = "https://github.com/keanine/SF_PlayerCommonMerge/";
+            Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
+        }
+
+        private void mnuGameBanana_Click(object sender, RoutedEventArgs e)
+        {
+            string url = "https://gamebanana.com/tools/11320";
+            Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
         }
     }
 }

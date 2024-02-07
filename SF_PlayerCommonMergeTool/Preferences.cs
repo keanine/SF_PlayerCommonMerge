@@ -16,7 +16,7 @@ namespace SF_PlayerCommonMergeTool
 
         public static string appData = string.Empty;
 
-        public float toolVersion = 1.9f;
+        public float toolVersion = 2.0f;
         public static float ToolVersion { get { return instance.toolVersion; } }
 
         public string latestPlayercommonHash = "8d18390d4092f44556cf548f32b8f70f";

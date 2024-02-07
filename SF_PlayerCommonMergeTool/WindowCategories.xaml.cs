@@ -167,7 +167,12 @@ namespace SF_PlayerCommonMergeTool
         {
             //download from UpdateServer/categories
             //Refresh StackPanel
+
+            string url = "https://github.com/keanine/SF_PlayerCommonMerge/tree/main/Addon%20Categories";
+            Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
         }
+
+        // add a refresh button
 
         private void CreateCheckbox(StackPanel panel, Category category, bool isChecked)
         {
