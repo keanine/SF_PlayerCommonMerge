@@ -4,7 +4,7 @@
   "character": "Knuckles",
   "chunks": [
     {
-      "comment": "???",
+      "comment": "All bytes that affect gliding",
       "offset": "0x7A90",
       "size": "0x5C"
     }
