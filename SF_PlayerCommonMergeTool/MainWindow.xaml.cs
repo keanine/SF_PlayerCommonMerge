@@ -63,7 +63,7 @@ namespace SF_PlayerCommonMergeTool
 
         public string iniTemplate =
 @"[Desc]
-Title=""MergedPlayerCommon""
+Title=""MergeTool Mod""
 Description=""None""
 Version=1.0
 Date=""2023-07-04""
